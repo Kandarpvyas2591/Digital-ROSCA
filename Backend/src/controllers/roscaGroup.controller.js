@@ -8,7 +8,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 export const createGroup = asyncHandler(async (req, res) => {
   try {
     const newGroup = new ROSCAGroup({ ...req.body });
-    // newGroup.admin = req.user._id;
+    newGroup.admin = req.user.id;
+    newGroup.members.push(req.user.id);
 
     await newGroup.save();
     res
@@ -195,5 +196,17 @@ export const removeMember = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, group, 'Member removed successfully'));
   } catch (error) {
     res.status(500).json(new ApiError(error.message, 500));
+  }
+})
+
+export const payOuts = asyncHandler(async (req, res) => {
+  try {
+    const groups = await ROSCAGroup.find();
+    groups.forEach(async (group) => {
+      group.cycleEndDate = new Date(group.cycleStartDate);
+      group.cycleEndDate.setMonth(group.cycleEndDate.getMonth() + group.cycleDuration);
+    })
+  } catch (error) {
+    
   }
 })

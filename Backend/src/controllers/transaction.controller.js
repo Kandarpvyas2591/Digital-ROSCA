@@ -52,6 +52,19 @@ export const createTransaction = asyncHandler(async (req, res) => {
         .json(new ApiError('Insufficient funds', null, 400));
     }
 
+    const options = {
+      amount: amount * 100,
+      currency: process.env.CURRENCY,
+      receipt: newTransaction._id,
+    };
+
+    await razorpayInstance.orders.create(options, (error, order) => {
+      if (error) {
+        return res.json(new ApiError('Error creating order', null, 500));
+      }
+      res.json(new ApiResponse(200, order, 'Order created successfully'));
+    });
+
     senderEntity.walletAmount -= amount;
     receiverEntity.walletAmount += amount;
     newTransaction.status = 'completed';
