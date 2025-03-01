@@ -1,9 +1,14 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { FaUser, FaEnvelope, FaLock, FaPhone } from 'react-icons/fa';
 import { signUp } from '../services/apiROSCAgroup';
+import AuthModal from '../components/AuthModal';
 
 function SignUp() {
   const formRef = useRef(null);
+  const [isvisible, setIsvisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIconColor, setModalIconColor] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,6 +17,15 @@ function SignUp() {
     console.log('Form Submitted', data);
     const user = await signUp(data);
     if (user) {
+      if (user) {
+        setModalTitle('Sign Up Successful!');
+        setModalMessage('Welcome back! You have successfully Signed in.');
+        setModalIconColor('bg-blue-500');
+        setIsvisible(true);
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2500);
+      }
       window.location.href = '/dashboard'; // Redirect to dashboard or any other page
     }
   };
@@ -102,6 +116,13 @@ function SignUp() {
           </a>
         </p>
       </div>
+      <AuthModal
+        isVisible={isvisible}
+        title={modalTitle}
+        message={modalMessage}
+        iconColor={modalIconColor}
+        onClose={() => setIsvisible(false)}
+      />
     </div>
   );
 }
