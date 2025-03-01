@@ -5,7 +5,7 @@ import { ApiError } from '../utils/apiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 // Create a new ROSCA group
-export const createGroup = asyncHandler (async (req, res) => {
+export const createGroup = asyncHandler(async (req, res) => {
   try {
     const newGroup = new ROSCAGroup({ ...req.body });
     newGroup.admin = req.user._id;
@@ -15,6 +15,7 @@ export const createGroup = asyncHandler (async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, newGroup, 'ROSCA group created successfully'));
   } catch (error) {
+    res.status(500).json(new ApiError(500, error.message, error));
     res
       .status(500)
       .json(new ApiError(error.message, 500));
@@ -27,25 +28,25 @@ export const getAllGroups = asyncHandler(async (req, res) => {
     const groups = await ROSCAGroup.find();
     res.status(200).json(groups);
   } catch (error) {
-    res
-      .status(500)
-      .json(new ApiError('Error retrieving ROSCA groups', error.message, 500));
+    res.status(500).json(new ApiError(500, error.message, error));
   }
 });
 
 // Get a single ROSCA group by ID
 export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id)
-    .populate('members', 'username email')
+    const group = await ROSCAGroup.findById(req.params.id).populate(
+      'members',
+      'username email'
+    );
     if (!group)
-      return res.status(404).json(new ApiError('ROSCA group not found', null, 404));
+      return res
+        .status(404)
+        .json(new ApiError('ROSCA group not found', null, 404));
 
     res.status(200).json(group);
   } catch (error) {
-    res
-      .status(500)
-      .json(ApiResponse(500, null, 'Error retrieving ROSCA group', error.message));
+    res.status(500).json(ApiResponse(500, error.message, error));
   }
 });
 
@@ -80,9 +81,7 @@ export const deleteGroup = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: 'ROSCA group deleted successfully' });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error deleting ROSCA group', error: error.message });
+    res.status(500).json(new ApiError(500, error.message, error));
   }
 });
 
@@ -121,31 +120,29 @@ export const addMember = asyncHandler(async (req, res) => {
     const user = await User.findById(memberId);
 
     if (!group)
-      return res.status(404).json(new ApiError('ROSCA group not found', null, 404));
+      return res
+        .status(404)
+        .json(new ApiError('ROSCA group not found', null, 404));
 
     // Check if member is already in the group
     if (group.members.includes(memberId)) {
-      return res
-        .status(400)
-        .json(new ApiError('Member is already part of this ROSCA group', null, 400));
+      return res.status(400).json(new ApiError(500, error.message, error));
     }
 
     if (group.members.length >= group.maxMembers) {
-      return res
-        .status(400)
-        .json(new ApiError('ROSCA group is full', null, 400));
+      return res.status(400).json(new ApiError(500, error.message, error));
     }
 
     if (!user) {
-      return res
-        .status(404)
-        .json(new ApiError('User not found', null, 404));
+      return res.status(404).json(new ApiError('User not found', null, 404));
     }
 
     if (user.joinedGroups.includes(req.params.id)) {
       return res
         .status(400)
-        .json(new ApiError('User is already part of this ROSCA group', null, 400));
+        .json(
+          new ApiError('User is already part of this ROSCA group', null, 400)
+        );
     }
 
     user.joinedGroups.push(req.params.id);
@@ -155,10 +152,10 @@ export const addMember = asyncHandler(async (req, res) => {
     group.members.push(memberId);
     await group.save();
 
-    res.status(200).json(new ApiResponse(200, group, 'Member added successfully'));
-  } catch (error) {
     res
-      .status(500)
-      .json(new ApiError('Error adding member to ROSCA group', error.message, 500));
+      .status(200)
+      .json(new ApiResponse(200, group, 'Member added successfully'));
+  } catch (error) {
+    res.status(500).json(new ApiError(500, error.message, error));
   }
-})
+});

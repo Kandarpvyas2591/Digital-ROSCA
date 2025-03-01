@@ -14,7 +14,12 @@ export const createTransaction = asyncHandler(async(req, res) => {
 
         const senderEntity = senderType === "User" ? await User.findById(sender) : await ROSCAGroup.findById(sender);
         if (!senderEntity) {
-            return res.status(404).json({ message: `Sender (${senderType}) not found` });
+            return res.status(404).json(new ApiError());
+        }
+
+        const receiverEntity = receiverType === "User" ? await User.findById(receiver) : await ROSCAGroup.findById(receiver);
+        if (!receiverEntity) {
+            return res.status(404).json({ message: `Receiver (${receiverType}) not found` });
         }
     } catch (error) {
         

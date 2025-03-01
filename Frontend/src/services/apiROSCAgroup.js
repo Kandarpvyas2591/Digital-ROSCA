@@ -21,3 +21,25 @@ export async function getGroupById(id) {
   // console.log(data);
   return data;
 }
+
+export async function login(data) {
+  await fetch(`${API_URL}/user/login`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function signUp(data) {
+  await fetch(`${API_URL}/user/register`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
