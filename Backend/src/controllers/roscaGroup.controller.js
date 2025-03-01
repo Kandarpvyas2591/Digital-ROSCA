@@ -1,6 +1,6 @@
 import { ROSCAGroup } from '../models/roscaGroup.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
-import { AppError } from '../utils/appError.js';
+import { ApiError } from '../utils/apiError.js';
 
 // Create a new ROSCA group
 export const createGroup = async (req, res) => {
@@ -14,7 +14,7 @@ export const createGroup = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json(new AppError('Error creating ROSCA group', error.message, 500));
+      .json(new ApiError('Error creating ROSCA group', error.message, 500));
   }
 };
 
@@ -26,7 +26,7 @@ export const getAllGroups = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json(new AppError('Error retrieving ROSCA groups', error.message, 500));
+      .json(new ApiError('Error retrieving ROSCA groups', error.message, 500));
   }
 };
 

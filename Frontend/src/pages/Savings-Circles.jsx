@@ -1,31 +1,33 @@
 import { HiUsers, HiClock, HiCurrencyDollar } from 'react-icons/hi2';
-import { useNavigate } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import { getGroups } from '../services/apiROSCAgroup';
 
-const roscaGroups = [
-  {
-    id: 1,
-    name: 'Wealth Builders',
-    amount: '$500',
-    duration: '6 months',
-    members: 3,
-  },
-  {
-    id: 2,
-    name: 'Smart Savers',
-    amount: '$300',
-    duration: '3 months',
-    members: 4,
-  },
-  {
-    id: 3,
-    name: 'Future Fund',
-    amount: '$700',
-    duration: '12 months',
-    members: 5,
-  },
-];
+// const roscaGroups = [
+//   {
+//     id: 1,
+//     name: 'Wealth Builders',
+//     amount: '$500',
+//     duration: '6 months',
+//     members: 3,
+//   },
+//   {
+//     id: 2,
+//     name: 'Smart Savers',
+//     amount: '$300',
+//     duration: '3 months',
+//     members: 4,
+//   },
+//   {
+//     id: 3,
+//     name: 'Future Fund',
+//     amount: '$700',
+//     duration: '12 months',
+//     members: 5,
+//   },
+// ];
 
 function SavingsCircles() {
+  const roscaGroups = useLoaderData();
   const navigate = useNavigate();
 
   return (
@@ -49,7 +51,7 @@ function SavingsCircles() {
             <tbody>
               {roscaGroups.map((group, index) => (
                 <tr
-                  key={group.id}
+                  key={group._id}
                   className={`border-b hover:bg-gray-100 ${
                     index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
                   }`}
@@ -61,18 +63,18 @@ function SavingsCircles() {
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     <HiCurrencyDollar className="text-green-500" />
-                    {group.amount}
+                    {group.contributionAmount}
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     <HiClock className="text-blue-500" />
-                    {group.duration}
+                    {group.cycleDuration}
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     {group.members} members
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button
-                      onClick={() => navigate(`/savings-circles/${group.id}`)}
+                      onClick={() => navigate(`/savings-circles/${group._id}`)}
                       className="rounded-md bg-violet-600 px-5 py-2 text-white transition hover:bg-violet-700"
                     >
                       Join
@@ -86,6 +88,11 @@ function SavingsCircles() {
       </div>
     </div>
   );
+}
+
+export async function groupsLoader() {
+  const roscaGroups = await getGroups();
+  return roscaGroups;
 }
 
 export default SavingsCircles;

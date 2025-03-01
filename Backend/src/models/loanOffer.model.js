@@ -2,9 +2,15 @@ import { model, Schema } from 'mongoose';
 
 const loanOfferSchema = new Schema(
   {
-    user: {
+    offeredBy: {
+      type: String,
+      enum: ['rosca-group', 'individual-user'],
+      required: true,
+    },
+    lenderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
+    lender: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      refPath: "lenderType",
       required: true,
     },
     amount: {
@@ -16,7 +22,7 @@ const loanOfferSchema = new Schema(
       required: true,
     },
     duration: {
-      type: Number,
+      type: Number, //months , loan is valid until in month
       required: true,
     },
     reason: {
@@ -31,19 +37,20 @@ const loanOfferSchema = new Schema(
       enum: ['active', 'expired', 'completed', 'declined'],
       default: 'active',
     },
-    type: {
-      type: String,
-      enum: ['offer', 'request'],
-      required: true,
-    },
     acceptedBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+
     requiredDocuments: [
       {
         type: String,
-        enum: ['ID Proof', 'Income Proof', 'Collateral Proof', 'Agreement'],
+        enum: [
+          'ID Proof',
+          'Income Proof',
+          // 'Collateral Proof',
+          //  'Agreement'
+        ],
       },
     ],
     acceptedDate: {

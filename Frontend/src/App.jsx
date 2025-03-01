@@ -5,7 +5,7 @@ import Error from './components/Error';
 import Dashboard from './pages/Dashboard';
 import GroupCreation from './pages/GroupCreation';
 import SavingCircleGroup from './components/SavingCircleGroup';
-import SavingsCircles from './pages/Savings-Circles';
+import SavingsCircles, { groupsLoader } from './pages/Savings-Circles';
 import ProfilePage from './pages/Profile';
 import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
@@ -44,6 +44,7 @@ const router = createBrowserRouter([
       {
         path: '/savings-circles',
         element: <SavingsCircles />,
+        loader: groupsLoader,
       },
       {
         path: '/savings-circles/:id',
