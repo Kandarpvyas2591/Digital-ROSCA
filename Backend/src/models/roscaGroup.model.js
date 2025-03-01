@@ -15,7 +15,7 @@ const groupSchema = new Schema(
     cycleDuration: {
       type: Number, // in months
       required: true,
-      default: 1
+      default: 1,
     },
     contributionAmount: {
       type: Number,
@@ -53,6 +53,11 @@ const groupSchema = new Schema(
       type: Number,
       // required: true,
       default: 0,
+    },
+    groupType: {
+      type: String,
+      enum: ['normal', 'lender'],
+      required: true,
     },
     registrationDeadline: {
       type: Date,
