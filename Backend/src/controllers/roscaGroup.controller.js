@@ -17,7 +17,7 @@ export const createGroup = asyncHandler (async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json(new ApiError('Error creating ROSCA group', error.message, 500));
+      .json(new ApiError(error.message, 500));
   }
 });
 
