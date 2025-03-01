@@ -32,10 +32,10 @@ export const getAllGroups = asyncHandler(async (req, res) => {
 // Get a single ROSCA group by ID
 export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id).populate(
-      'members',
-      'username email'
-    );
+    const group = await ROSCAGroup.findById(req.params.id).populate({
+      path: 'members',
+      select: 'username email',
+    });
     if (!group)
       return res
         .status(404)
