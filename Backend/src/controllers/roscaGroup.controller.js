@@ -112,7 +112,7 @@ export const deleteGroup = asyncHandler(async (req, res) => {
 
 export const addMember = asyncHandler(async (req, res) => {
   try {
-    const { memberId } = req.body;
+    const { memberId } = req.user._id;
     const group = await ROSCAGroup.findById(req.params.id);
     const user = await User.findById(memberId);
 
