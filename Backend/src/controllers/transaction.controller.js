@@ -1,9 +1,9 @@
-import { ROSCAGroup } from '../models/roscaGroup.model';
-import { Transaction } from '../models/transaction.model';
-import { User } from '../models/user.model';
-import { ApiError } from '../utils/apiError';
-import { ApiResponse } from '../utils/ApiResponse';
-import { asyncHandler } from '../utils/asyncHandler';
+import { ROSCAGroup } from '../models/roscaGroup.model.js';
+import { Transaction } from '../models/transaction.model.js';
+import { User } from '../models/user.model.js';
+import { ApiError } from '../utils/apiError.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const createTransaction = asyncHandler(async (req, res) => {
   try {
@@ -51,6 +51,19 @@ export const createTransaction = asyncHandler(async (req, res) => {
         .status(400)
         .json(new ApiError('Insufficient funds', null, 400));
     }
+
+    const options = {
+      amount: amount * 100,
+      currency: process.env.CURRENCY,
+      receipt: newTransaction._id,
+    };
+
+    await razorpayInstance.orders.create(options, (error, order) => {
+      if (error) {
+        return res.json(new ApiError('Error creating order', null, 500));
+      }
+      res.json(new ApiResponse(200, order, 'Order created successfully'));
+    });
 
     senderEntity.walletAmount -= amount;
     receiverEntity.walletAmount += amount;
