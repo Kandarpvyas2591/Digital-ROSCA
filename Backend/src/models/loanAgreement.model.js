@@ -7,9 +7,10 @@ const loanAgreementSchema = new Schema(
       ref: 'User',
       required: true,
     },
+    lenderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
     lender: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      refPath: "lenderType",
       required: true,
     },
     amount: {

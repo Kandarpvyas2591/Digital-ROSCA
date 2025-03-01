@@ -49,6 +49,11 @@ const groupSchema = new Schema(
       type: Number,
       // required: true,
     },
+    walletAmount: {
+      type: Number,
+      // required: true,
+      default: 0,
+    },
     registrationDeadline: {
       type: Date,
       required: true,

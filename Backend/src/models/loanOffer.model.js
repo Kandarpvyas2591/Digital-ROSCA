@@ -2,9 +2,15 @@ import { model, Schema } from 'mongoose';
 
 const loanOfferSchema = new Schema(
   {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    type: {
+      type: String,
+      enum: ['offer', 'request'],
+      required: true,
+    },
+    senderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "senderType",
       required: true,
     },
     amount: {
@@ -30,11 +36,6 @@ const loanOfferSchema = new Schema(
       type: String,
       enum: ['active', 'expired', 'completed', 'declined'],
       default: 'active',
-    },
-    type: {
-      type: String,
-      enum: ['offer', 'request'],
-      required: true,
     },
     acceptedBy: {
       type: Schema.Types.ObjectId,
