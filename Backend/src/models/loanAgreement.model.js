@@ -2,14 +2,20 @@ import { model, Schema } from 'mongoose';
 
 const loanAgreementSchema = new Schema(
   {
+    loanOffer: {
+      type: Schema.Types.ObjectId,
+      ref: 'LoanOffer',
+      required: true,
+    },
     borrower: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
+    lenderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
     lender: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      refPath: "lenderType",
       required: true,
     },
     amount: {
@@ -32,6 +38,15 @@ const loanAgreementSchema = new Schema(
     repaidAmount: {
       type: Number,
       default: 0,
+    },
+    idProof: {
+      type: String, // URL to the uploaded file
+    },
+    incomeProof: {
+      type: String, // URL to the uploaded file
+    },
+    verificationReason: {
+      type: String,
     },
     startDate: {
       type: Date,
