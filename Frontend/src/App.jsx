@@ -1,35 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import AppLayout from './layouts/AppLayout';
+import Home from './pages/Home';
+import Error from './components/Error';
+import Dashboard from './pages/Dashboard';
+import GroupCreation from './pages/GroupCreation';
+import SavingCircleGroup from './components/SavingCircleGroup';
+import SavingsCircles from './pages/Savings-Circles';
+import ProfilePage from './pages/Profile';
+import SignIn from './pages/Sign-in';
+import SignUp from './pages/Sign-up';
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    errorElement: <Error />,
+    children: [
+      {
+        path: '/',
+        element: <Home />,
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
+        children: [
+          {
+            path: 'overview',
+            element: <div>Overview</div>,
+          },
+          {
+            path: 'reports',
+            element: <div>Reports</div>,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
+        ],
+      },
+      {
+        path: '/group-creation',
+        element: <GroupCreation />,
+      },
+      {
+        path: '/savings-circles',
+        element: <SavingsCircles />,
+      },
+      {
+        path: '/savings-circles/:id',
+        element: <SavingCircleGroup />,
+      },
+      {
+        path: 'Sign-in',
+        element: <SignIn />,
+      },
+      {
+        path: 'Sign-up',
+        element: <SignUp />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
