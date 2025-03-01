@@ -11,6 +11,7 @@ import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
 import PaymentPage from './pages/Payment';
+import LoanAgreement from './pages/LoanAgreement';
 
 const router = createBrowserRouter([
   {
@@ -61,12 +62,16 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path:'loan-offers',
+        path:'view-loans',
         element:<LoanOffers/>
-      }
+      },
       {
         path: '/payment',
         element: <PaymentPage />
+      },
+      {
+        path: '/loan-agreement',
+        element: <LoanAgreement />
       }
     ],
   },

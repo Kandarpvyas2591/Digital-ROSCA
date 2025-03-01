@@ -76,7 +76,8 @@ const LoanPage = () => {
             {selectedLoan.type === 'requested' && <p className="text-gray-700"><strong>Reason:</strong> {selectedLoan.reason}</p>}
             <div className="flex gap-4 mt-6">
               <button onClick={() => setSelectedLoan(null)} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md w-full font-semibold">Close</button>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full font-semibold">Accept</button>
+              <button onClick={() => window.location.href = '/loan-agreement'}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full font-semibold">Accept</button>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ function Header() {
         </div>
 
         <div className="hidden gap-8 md:flex">
-          {['Dashboard', 'Group Creation', 'Savings Circles'].map((item) => (
+          {['Dashboard', 'Group Creation', 'Savings Circles','View Loans'].map((item) => (
             <span
               key={item}
               className="cursor-pointer border-b-2 border-transparent pb-1 text-lg text-gray-700 transition duration-300 hover:border-violet-500 hover:text-violet-600"
