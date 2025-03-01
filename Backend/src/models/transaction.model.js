@@ -9,7 +9,7 @@ const transactionSchema = new Schema(
     },
     senderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
     sender: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       refPath: "senderType",
       required: true,
     },
@@ -20,7 +20,7 @@ const transactionSchema = new Schema(
       required: true,
     }, // Indicates if receiver is a user or a group
     receiver: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       refPath: "receiverType",
       required: true,
     },

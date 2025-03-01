@@ -157,3 +157,43 @@ export const addMember = asyncHandler(async (req, res) => {
     res.status(500).json(new ApiError(error.message, 500));
   }
 });
+
+export const removeMember = asyncHandler(async (req, res) => {
+  try {
+    const group = await ROSCAGroup.findById(req.params.id);
+    const {memberId} = req.body;
+    const user = await User.findById(memberId);
+
+    if (!group)
+      return res
+        .status(404)
+        .json(new ApiError('ROSCA group not found', null, 404));
+
+    // Check if member is in the group
+    if (!group.members.includes(req.user.id)) {
+      return res
+        .status(400)
+        .json(new ApiError('Member is not part of this ROSCA group', null, 400));
+    }
+
+    if (!user) {
+      return res.status(404).json(new ApiError('User not found', null, 404));
+    }
+
+    // Remove member from group
+    group.members = group.members.filter((member) => member !== req.user.id);
+    await group.save();
+
+    // Remove group from user
+    user.joinedGroups = user.joinedGroups.filter(
+      (group) => group !== req.params.id
+    );
+    await user.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, group, 'Member removed successfully'));
+  } catch (error) {
+    res.status(500).json(new ApiError(error.message, 500));
+  }
+})
