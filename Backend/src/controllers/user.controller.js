@@ -38,9 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (existedUser) {
     const conflictField =
-      existedUser.email === email
-        ? 'Email'
-        : 'Mobile Number';
+      existedUser.email === email ? 'Email' : 'Mobile Number';
     throw new ApiError(409, `User with ${conflictField} already exists`);
   }
 
@@ -186,6 +184,39 @@ const updateUser = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, user, 'User updated successfully'));
 });
+
+const checkPassword = asyncHandler(async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json(new ApiError(400, 'Password not provided'));
+    }
+
+    const user = await User.findById(req.user.id).select('+password');
+    if (!user) {
+      return res.status(404).json(new ApiError(404, 'User not found'));
+    }
+
+    if (!user.password) {
+      return res
+        .status(500)
+        .json(new ApiError(500, 'User password is missing'));
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json(new ApiError('Invalid password', 400));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, 'Password is correct'));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(new ApiError(500, error.message));
+  }
+});
+
 export {
   registerUser,
   loginUser,
@@ -193,4 +224,5 @@ export {
   changeCurrentPassword,
   getMe,
   updateUser,
+  checkPassword,
 };
