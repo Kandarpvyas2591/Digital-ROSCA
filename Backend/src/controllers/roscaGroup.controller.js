@@ -8,17 +8,14 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 export const createGroup = asyncHandler(async (req, res) => {
   try {
     const newGroup = new ROSCAGroup({ ...req.body });
-    newGroup.admin = req.user._id;
+    // newGroup.admin = req.user._id;
 
     await newGroup.save();
     res
       .status(201)
       .json(new ApiResponse(201, newGroup, 'ROSCA group created successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
-    res
-      .status(500)
-      .json(new ApiError(error.message, 500));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });
 
@@ -28,17 +25,17 @@ export const getAllGroups = asyncHandler(async (req, res) => {
     const groups = await ROSCAGroup.find();
     res.status(200).json(groups);
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });
 
 // Get a single ROSCA group by ID
 export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id).populate(
-      'members',
-      'username email'
-    );
+    const group = await ROSCAGroup.findById(req.params.id).populate({
+      path: 'members',
+      select: 'username email',
+    });
     if (!group)
       return res
         .status(404)
@@ -46,7 +43,7 @@ export const getGroupById = asyncHandler(async (req, res) => {
 
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json(ApiResponse(500, error.message, error));
+    res.status(500).json(ApiResponse(error.message, 500, error));
   }
 });
 
@@ -115,9 +112,9 @@ export const deleteGroup = asyncHandler(async (req, res) => {
 
 export const addMember = asyncHandler(async (req, res) => {
   try {
-    const { memberId } = req.body;
+    // const { memberId } = req.user.id;
     const group = await ROSCAGroup.findById(req.params.id);
-    const user = await User.findById(memberId);
+    const user = await User.findById(req.user.id);
 
     if (!group)
       return res
@@ -125,16 +122,17 @@ export const addMember = asyncHandler(async (req, res) => {
         .json(new ApiError('ROSCA group not found', null, 404));
 
     // Check if member is already in the group
-    if (group.members.includes(memberId)) {
-      return res.status(400).json(new ApiError(500, error.message, error));
+    if (group.members.includes(req.user.id)) {
+      return res.status(400).json(new ApiError(error.message, 500, error));
     }
 
     if (group.members.length >= group.maxMembers) {
-      return res.status(400).json(new ApiError(500, error.message, error));
+      return res.status(400).json(new ApiError(error.message, 500, error));
     }
 
     if (!user) {
-      return res.status(404).json(new ApiError('User not found', null, 404));
+      // console.log(user);
+      return res.status(404).json(new ApiError('User not found', {}, 404));
     }
 
     if (user.joinedGroups.includes(req.params.id)) {
@@ -156,6 +154,6 @@ export const addMember = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, group, 'Member added successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });

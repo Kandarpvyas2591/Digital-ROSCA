@@ -2,6 +2,16 @@ import { LoanOffer } from '../models/loanOffer.model.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/apiError.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
+export const getAllLoanOffers = asyncHandler(async (req, res) => {
+  const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, loanOffers, 'All loan offers retrieved successfully')
+    );
+});
+
 export const createLoanOffer = asyncHandler(async (req, res, next) => {
   const {
     type,

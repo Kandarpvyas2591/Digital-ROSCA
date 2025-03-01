@@ -1,16 +1,21 @@
 import { useState, useRef } from 'react';
 import { HiPencilSquare } from 'react-icons/hi2';
+import { getMe } from '../services/apiROSCAgroup';
+
+const User = await getMe();
 
 export default function ProfilePage() {
-  const [user, setUser] = useState({
-    name: 'Kandarp Vyas',
-    email: 'kandarpvyas2591@gmail.com',
-    pan: 'ABCDE1234F',
-    mobile: '9876543210',
-    reputation: 85,
-    joinedGroups: ['Wealth Builders', 'Smart Savers'],
-    createdGroups: ['Future Fund'],
-  });
+  // const [user, setUser] = useState({
+  //   name: 'Kandarp Vyas',
+  //   email: 'kandarpvyas2591@gmail.com',
+  //   pan: 'ABCDE1234F',
+  //   mobile: '9876543210',
+  //   reputation: 85,
+  //   joinedGroups: ['Wealth Builders', 'Smart Savers'],
+  //   createdGroups: ['Future Fund'],
+  // });
+  console.log('User:', User);
+  const [user, setUser] = useState(User);
 
   const [edit, setEdit] = useState(false);
   const formRef = useRef(null);
@@ -61,7 +66,7 @@ export default function ProfilePage() {
               <input
                 type="text"
                 name="name"
-                defaultValue={user.name}
+                defaultValue={user.username}
                 className="w-full rounded border bg-gray-100 p-2"
                 disabled={!edit}
               />
@@ -91,7 +96,7 @@ export default function ProfilePage() {
               <input
                 type="text"
                 name="mobile"
-                defaultValue={user.mobile}
+                defaultValue={user.mobileNumber}
                 className="w-full rounded border bg-gray-100 p-2"
                 disabled={!edit}
               />
@@ -139,7 +144,7 @@ export default function ProfilePage() {
         <div className="mt-6">
           <h3 className="text-xl font-semibold text-gray-700">Joined Groups</h3>
           <ul className="list-disc pl-6 text-gray-600">
-            {user.joinedGroups.map((group, index) => (
+            {user?.joinedGroups?.map((group, index) => (
               <li key={index}>{group}</li>
             ))}
           </ul>
@@ -150,7 +155,7 @@ export default function ProfilePage() {
             Created Groups
           </h3>
           <ul className="list-disc pl-6 text-gray-600">
-            {user.createdGroups.map((group, index) => (
+            {user?.createdGroups?.map((group, index) => (
               <li key={index}>{group}</li>
             ))}
           </ul>

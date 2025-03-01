@@ -142,6 +142,18 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200), {}, 'User logged out Successfully');
 });
 
+const getMe = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select(
+    '-password -refreshToken'
+  );
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User details fetched successfully'));
+});
+
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);
@@ -156,4 +168,33 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'Password changed successfully'));
 });
 
-export { registerUser, loginUser, logoutUser, changeCurrentPassword };
+const updateUser = asyncHandler(async (req, res) => {
+  const { email, username, mobileNumber } = req.body;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  if (email && email !== user.email) {
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      throw new ApiError(409, 'Email is already taken');
+    }
+    user.email = email.toLowerCase();
+  }
+
+  if (username) user.username = username.toLowerCase();
+  if (mobileNumber) user.mobileNumber = mobileNumber;
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json(new ApiResponse(200, user, 'User updated successfully'));
+});
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  changeCurrentPassword,
+  getMe,
+  updateUser,
+};
