@@ -1,4 +1,5 @@
 import { ROSCAGroup } from '../models/roscaGroup.model.js';
+import { Transaction } from '../models/transaction.model.js';
 import { User } from '../models/user.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/apiError.js';
@@ -14,6 +15,11 @@ export const createGroup = asyncHandler(async (req, res) => {
     user.joinedGroups.push(newGroup.id);
     user.createdGroup.push(newGroup.id);
     await user.save();
+
+    newGroup.cycleEndDate = new Date(newGroup.cycleStartDate);
+    newGroup.cycleEndDate.setMonth(
+      newGroup.cycleEndDate.getMonth() + newGroup.cycleDuration
+    );
 
     await newGroup.save();
     res
@@ -212,12 +218,29 @@ export const removeMember = asyncHandler(async (req, res) => {
 
 export const payOuts = asyncHandler(async (req, res) => {
   try {
+    const date = Date.now();
     const groups = await ROSCAGroup.find();
     groups.forEach(async (group) => {
-      group.cycleEndDate = new Date(group.cycleStartDate);
-      group.cycleEndDate.setMonth(
-        group.cycleEndDate.getMonth() + group.cycleDuration
-      );
+      if (group.cycleEndDate <= date) {
+        group.cycleEndDate.setMonth(
+          group.cycleEndDate.getMonth() + group.cycleDuration
+        );
+        const transaction = await Transaction.create({
+          type: 'payout',
+          amount: group.payoutAmount * group.members.length,
+          senderType: 'ROSCAGroup',
+          sender: group.id,
+          receiverType: 'User',
+          receiver: group.members[group.cycleNumber],
+        });
+        group.cycleNumber += 1;
+        group.cycleNumber = group.cycleNumber % group.maxMembers;
+
+        await transaction.save();
+        await group.save();
+      }
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
