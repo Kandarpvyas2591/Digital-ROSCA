@@ -145,7 +145,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
     .select('-password -refreshToken')
-    .populate('joinedGroups');
+    .populate('joinedGroups')
+    .populate('createdGroup');
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
