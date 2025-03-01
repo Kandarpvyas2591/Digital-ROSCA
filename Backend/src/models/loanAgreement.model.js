@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+import { type } from 'os';
 
 const loanAgreementSchema = new Schema(
   {
@@ -10,41 +11,44 @@ const loanAgreementSchema = new Schema(
     borrower: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      // required: true,
     },
-    lenderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
+    lenderType: { type: String, enum: ['User', 'ROSCAGroup'], required: true }, // Indicates if sender is a user or a group
     lender: {
       type: Schema.Types.ObjectId,
-      refPath: "lenderType",
-      required: true,
+      refPath: 'lenderType',
+      // required: true,
     },
     amount: {
       type: Number,
-      required: true,
+      // required: true,
     },
     interestRate: {
       type: Number,
-      required: true,
+      // required: true,
     },
     duration: {
       type: Number, // in months
-      required: true,
+      // required: true,
     },
     status: {
       type: String,
       enum: ['requested', 'approved', 'rejected', 'repaid'],
-      default: 'pending',
+      default: 'requested',
     },
-    repaidAmount: {
+    amountwithInterest: {
       type: Number,
-      default: 0,
     },
-    idProof: {
-      type: String, // URL to the uploaded file
+    monthlyPayment: {
+      type: Number,
     },
-    incomeProof: {
-      type: String, // URL to the uploaded file
-    },
+    requiredDocuments: [
+      {
+        type: String,
+        enum: ['Aadhar Card', 'Income Certificate'],
+        required: true,
+      },
+    ],
     verificationReason: {
       type: String,
     },
@@ -60,6 +64,11 @@ const loanAgreementSchema = new Schema(
       type: Date,
       required: true,
     },
+    uploadedDocuments: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

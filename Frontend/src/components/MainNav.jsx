@@ -21,17 +21,7 @@ function MainNav() {
             <span>Home</span>
           </NavLink>
         </li>
-        <li>
-          <NavLink
-            to="/dashboard/overview"
-            className={({ isActive }) =>
-              `flex items-center gap-3 p-3 text-lg font-medium text-gray-600 transition-all ${isActive ? 'rounded-md bg-gray-50 text-gray-800' : 'hover:bg-gray-50 hover:text-gray-800'}`
-            }
-          >
-            <HiMiniSquares2X2 className="group-hover:text-brand-600 h-6 w-6 text-gray-400 transition-all" />
-            <span>OverView</span>
-          </NavLink>
-        </li>
+
         <li>
           <NavLink
             to="/dashboard/reports"
