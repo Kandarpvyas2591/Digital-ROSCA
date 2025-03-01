@@ -10,7 +10,7 @@ import ProfilePage from './pages/Profile';
 import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
-import PaymentPage from './pages/Payment';
+import TransactionHistory from './components/TransactionHistory';
 
 const router = createBrowserRouter([
   {
@@ -63,10 +63,6 @@ const router = createBrowserRouter([
       {
         path: 'loan-offers',
         element: <LoanOffers />,
-      },
-      {
-        path: '/payment',
-        element: <PaymentPage />,
       },
     ],
   },
