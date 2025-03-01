@@ -10,8 +10,6 @@ import ProfilePage from './pages/Profile';
 import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
-import PaymentPage from './pages/Payment';
-import CheckoutForm from './components/Checkout';
 
 const router = createBrowserRouter([
   {
