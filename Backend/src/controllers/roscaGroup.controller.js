@@ -1,11 +1,14 @@
 import { ROSCAGroup } from '../models/roscaGroup.model.js';
+import { User } from '../models/user.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/apiError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 // Create a new ROSCA group
-export const createGroup = async (req, res) => {
+export const createGroup = asyncHandler (async (req, res) => {
   try {
     const newGroup = new ROSCAGroup({ ...req.body });
+    newGroup.admin = req.user._id;
 
     await newGroup.save();
     res
@@ -16,10 +19,10 @@ export const createGroup = async (req, res) => {
       .status(500)
       .json(new ApiError('Error creating ROSCA group', error.message, 500));
   }
-};
+});
 
 // Get all ROSCA groups
-export const getAllGroups = async (req, res) => {
+export const getAllGroups = asyncHandler(async (req, res) => {
   try {
     const groups = await ROSCAGroup.find();
     res.status(200).json(groups);
@@ -28,25 +31,26 @@ export const getAllGroups = async (req, res) => {
       .status(500)
       .json(new ApiError('Error retrieving ROSCA groups', error.message, 500));
   }
-};
+});
 
 // Get a single ROSCA group by ID
-export const getGroupById = async (req, res) => {
+export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id);
+    const group = await ROSCAGroup.findById(req.params.id)
+    .populate('members', 'username email')
     if (!group)
-      return res.status(404).json({ message: 'ROSCA group not found' });
+      return res.status(404).json(new ApiError('ROSCA group not found', null, 404));
 
     res.status(200).json(group);
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Error retrieving ROSCA group', error: error.message });
+      .json(ApiResponse(500, null, 'Error retrieving ROSCA group', error.message));
   }
-};
+});
 
 // Update a ROSCA group
-export const updateGroup = async (req, res) => {
+export const updateGroup = asyncHandler(async (req, res) => {
   try {
     const updatedGroup = await ROSCAGroup.findByIdAndUpdate(
       req.params.id,
@@ -65,10 +69,10 @@ export const updateGroup = async (req, res) => {
       .status(500)
       .json({ message: 'Error updating ROSCA group', error: error.message });
   }
-};
+});
 
 // Delete a ROSCA group
-export const deleteGroup = async (req, res) => {
+export const deleteGroup = asyncHandler(async (req, res) => {
   try {
     const deletedGroup = await ROSCAGroup.findByIdAndDelete(req.params.id);
     if (!deletedGroup)
@@ -80,32 +84,81 @@ export const deleteGroup = async (req, res) => {
       .status(500)
       .json({ message: 'Error deleting ROSCA group', error: error.message });
   }
-};
+});
 
 // Add a contribution to a ROSCA group
-export const addContribution = async (req, res) => {
+// export const addContribution = asyncHandler(async (req, res) => {
+//   try {
+//     const { memberId, amount } = req.body;
+//     const group = await ROSCAGroup.findById(req.params.id);
+
+//     if (!group)
+//       return res.status(404).json({ message: 'ROSCA group not found' });
+
+//     // Check if member is in the group
+//     if (!group.members.includes(memberId)) {
+//       return res
+//         .status(400)
+//         .json({ message: 'Member is not part of this ROSCA group' });
+//     }
+
+//     // Add contribution record
+//     group.contributions.push({ memberId, amount, date: new Date() });
+//     await group.save();
+
+//     res.status(200).json({ message: 'Contribution added successfully', group });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: 'Error adding contribution', error: error.message });
+//   }
+// });
+
+export const addMember = asyncHandler(async (req, res) => {
   try {
-    const { memberId, amount } = req.body;
+    const { memberId } = req.body;
     const group = await ROSCAGroup.findById(req.params.id);
+    const user = await User.findById(memberId);
 
     if (!group)
-      return res.status(404).json({ message: 'ROSCA group not found' });
+      return res.status(404).json(new ApiError('ROSCA group not found', null, 404));
 
-    // Check if member is in the group
-    if (!group.members.includes(memberId)) {
+    // Check if member is already in the group
+    if (group.members.includes(memberId)) {
       return res
         .status(400)
-        .json({ message: 'Member is not part of this ROSCA group' });
+        .json(new ApiError('Member is already part of this ROSCA group', null, 400));
     }
 
-    // Add contribution record
-    group.contributions.push({ memberId, amount, date: new Date() });
+    if (group.members.length >= group.maxMembers) {
+      return res
+        .status(400)
+        .json(new ApiError('ROSCA group is full', null, 400));
+    }
+
+    if (!user) {
+      return res
+        .status(404)
+        .json(new ApiError('User not found', null, 404));
+    }
+
+    if (user.joinedGroups.includes(req.params.id)) {
+      return res
+        .status(400)
+        .json(new ApiError('User is already part of this ROSCA group', null, 400));
+    }
+
+    user.joinedGroups.push(req.params.id);
+    await user.save();
+
+    // Add member to group
+    group.members.push(memberId);
     await group.save();
 
-    res.status(200).json({ message: 'Contribution added successfully', group });
+    res.status(200).json(new ApiResponse(200, group, 'Member added successfully'));
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Error adding contribution', error: error.message });
+      .json(new ApiError('Error adding member to ROSCA group', error.message, 500));
   }
-};
+})

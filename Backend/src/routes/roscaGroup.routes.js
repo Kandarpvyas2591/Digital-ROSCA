@@ -5,7 +5,8 @@ import {
   getGroupById,
   updateGroup,
   deleteGroup,
-  addContribution,
+  // addContribution,
+  addMember,
 } from '../controllers/roscaGroup.controller.js';
 
 const router = Router();
@@ -14,8 +15,9 @@ const router = Router();
 router.post('/create-group', createGroup);
 router.get('/get-all-groups', getAllGroups);
 router.get('/get-group/:id', getGroupById);
-router.put('/update-group/:id', updateGroup);
+router.patch('/update-group/:id', updateGroup);
 router.delete('/delete-group/:id', deleteGroup);
-router.post('/contribute/:id', addContribution);
+// router.post('/contribute/:id', addContribution);
+router.post('/add-member/:id', addMember);
 
 export default router;
