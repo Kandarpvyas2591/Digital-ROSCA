@@ -44,3 +44,12 @@ export async function signUp(data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function getMe() {
+  const res = await fetch(`${API_URL}/user/getme`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  const data = await res.json();
+  return data.data;
+}
