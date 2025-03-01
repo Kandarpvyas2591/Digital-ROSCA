@@ -76,6 +76,8 @@ export const createTransaction = asyncHandler(async (req, res) => {
       await receiverEntity.save();
       await newTransaction.save();
 
+      console.log(order);
+
       return res.json(
         new ApiResponse(201, order, 'Order created successfully')
       );

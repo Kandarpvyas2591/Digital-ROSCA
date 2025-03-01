@@ -37,10 +37,15 @@ export const getAllGroups = asyncHandler(async (req, res) => {
 // Get a single ROSCA group by ID
 export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id).populate({
-      path: 'members',
-      select: 'username email',
-    });
+    const group = await ROSCAGroup.findById(req.params.id)
+      .populate({
+        path: 'members',
+        select: 'username email',
+      })
+      .populate({
+        path: 'admin',
+        select: 'username',
+      });
     if (!group)
       return res
         .status(404)
@@ -48,7 +53,7 @@ export const getGroupById = asyncHandler(async (req, res) => {
 
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json(ApiResponse(error.message, 500));
+    res.status(500).json(new ApiError(error.message, 500));
   }
 });
 
@@ -166,7 +171,7 @@ export const addMember = asyncHandler(async (req, res) => {
 export const removeMember = asyncHandler(async (req, res) => {
   try {
     const group = await ROSCAGroup.findById(req.params.id);
-    const {memberId} = req.body;
+    const { memberId } = req.body;
     const user = await User.findById(memberId);
 
     if (!group)
@@ -178,7 +183,9 @@ export const removeMember = asyncHandler(async (req, res) => {
     if (!group.members.includes(req.user.id)) {
       return res
         .status(400)
-        .json(new ApiError('Member is not part of this ROSCA group', null, 400));
+        .json(
+          new ApiError('Member is not part of this ROSCA group', null, 400)
+        );
     }
 
     if (!user) {
@@ -201,16 +208,16 @@ export const removeMember = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500).json(new ApiError(error.message, 500));
   }
-})
+});
 
 export const payOuts = asyncHandler(async (req, res) => {
   try {
     const groups = await ROSCAGroup.find();
     groups.forEach(async (group) => {
       group.cycleEndDate = new Date(group.cycleStartDate);
-      group.cycleEndDate.setMonth(group.cycleEndDate.getMonth() + group.cycleDuration);
-    })
-  } catch (error) {
-    
-  }
-})
+      group.cycleEndDate.setMonth(
+        group.cycleEndDate.getMonth() + group.cycleDuration
+      );
+    });
+  } catch (error) {}
+});

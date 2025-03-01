@@ -4,6 +4,7 @@ import { ApiError } from '../utils/apiError.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { User } from '../models/user.model.js';
+import { Email } from '../utils/email.js';
 
 export const getAllLoanOffers = asyncHandler(async (req, res) => {
   const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
@@ -133,9 +134,9 @@ export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
     return next(new ApiError(404, 'Loan offer not found'));
   }
 
-  console.log('🔹 Before Update - Loan Offer:', loanOffer);
-  console.log('🔹 User ID (Borrower):', userId);
-  console.log('🔹 Requested Status:', status);
+  // console.log('🔹 Before Update - Loan Offer:', loanOffer);
+  // console.log('🔹 User ID (Borrower):', userId);
+  // console.log('🔹 Requested Status:', status);
 
   if (
     !['active', 'expired', 'accepted', 'completed', 'declined'].includes(status)
@@ -161,6 +162,19 @@ export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
   }
 
   loanOffer.status = status;
+  const loanOfferEmail = await LoanOffer.findById(id).populate({
+    path: 'lender',
+    populate: {
+      path: 'admin',
+      select: 'email',
+    },
+  });
+
+  console.log(loanOfferEmail);
+
+  // const emailData = new Email(loanOfferEmail, 'loanRequest');
+  // await emailData.sendLoanRequest();
+
   await loanOffer.save({ validateBeforeSave: false });
 
   const updatedLoanOffer = await LoanOffer.findById(id);
