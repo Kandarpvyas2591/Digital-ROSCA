@@ -15,7 +15,7 @@ function CreatedGroup({ user }) {
               }}
             >
               <h3 className="text-lg font-semibold">{group.name}</h3>
-              <p>Contribution: ${group.contributionAmount}</p>
+              <p>Contribution: {group.contributionAmount}</p>
               <p>Duration: {group.cycleDuration} months</p>
               <p>Members: {group.members?.length || 0}</p>
             </div>
