@@ -15,7 +15,7 @@ export const createGroup = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, newGroup, 'ROSCA group created successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(error.message, 500, error));
+    res.status(500).json(new ApiError(error.message, 500));
   }
 });
 
@@ -43,7 +43,7 @@ export const getGroupById = asyncHandler(async (req, res) => {
 
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json(ApiResponse(error.message, 500, error));
+    res.status(500).json(ApiResponse(error.message, 500));
   }
 });
 
@@ -123,11 +123,11 @@ export const addMember = asyncHandler(async (req, res) => {
 
     // Check if member is already in the group
     if (group.members.includes(req.user.id)) {
-      return res.status(400).json(new ApiError(error.message, 500, error));
+      return res.status(400).json(new ApiError(error.message, 500));
     }
 
     if (group.members.length >= group.maxMembers) {
-      return res.status(400).json(new ApiError(error.message, 500, error));
+      return res.status(400).json(new ApiError(error.message, 500));
     }
 
     if (!user) {
@@ -154,6 +154,6 @@ export const addMember = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, group, 'Member added successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(error.message, 500, error));
+    res.status(500).json(new ApiError(error.message, 500));
   }
 });
