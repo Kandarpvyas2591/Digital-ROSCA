@@ -4,8 +4,9 @@ export default function GroupCreation() {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [groupType, setGroupType] = useState("normal");
-  const [withdrawalDuration, setWithdrawalDuration] = useState("");
+  const [cycleDuration, setWithdrawalDuration] = useState("");
   const [contributionAmount, setContributionAmount] = useState("");
+  const [maxMembers, setMaxMembers] = useState("");
   const [cycleStartDate, setStartDate] = useState("");
   const [registrationDeadline, setRegistrationDeadline] = useState("");
   const [payoutPercentage, setPayoutPercentage] = useState(""); // Only for Lender
@@ -40,8 +41,9 @@ export default function GroupCreation() {
       name: groupName,
       description,
       groupType,
-      withdrawalDuration,
+      cycleDuration,
       contributionAmount,
+      maxMembers,
       cycleStartDate,
       registrationDeadline,
       ...(groupType === "lender" && {payoutAmount }), // Include only for lenders
@@ -59,6 +61,7 @@ export default function GroupCreation() {
         setMessage("ROSCA Group Created Successfully!");
       } else {
         setMessage(data.message || "Error creating group.");
+        console.log(data);
       }
     } catch (error) {
       setMessage("Failed to connect to the server.");
@@ -160,6 +163,32 @@ export default function GroupCreation() {
               />
             </div>
           )}
+
+          {/* Withdrawal Duration */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Withdrawal Duration</label>
+            <input
+              type="text"
+              placeholder="Enter Duration (e.g., after 1 Month, 2 month etc)"
+              value={cycleDuration}
+              onChange={(e) => setWithdrawalDuration(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
+
+          {/* Max Members */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Max Members</label>
+            <input
+              type="number"
+              placeholder="Enter Duration (e.g., Weekly, Monthly)"
+              value={maxMembers}
+              onChange={(e) => setMaxMembers(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
 
           {/* Start Date */}
           <div>

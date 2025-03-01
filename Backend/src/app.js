@@ -14,11 +14,10 @@ dotenv.config({
   path: '../.env',
 });
 
-app.use(cors());
-
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    // origin: process.env.CORS_ORIGIN,
+    origin: 'http://localhost:5173',
     credentials: true,
   })
 );
@@ -34,11 +33,12 @@ app.use(xss());
 //routes import
 import userRouter from './routes/user.routes.js';
 import roscaGroupRouter from './routes/roscaGroup.routes.js';
-
+import loanOfferRouter from './routes/loanOffer.routes.js';
 //router declaration
 app.use('/api/v1/user', userRouter);
 // app.use('/api/v1/loan', loanRouter);
 app.use('/api/v1/rosca', roscaGroupRouter);
+app.use('/api/v1/loan', loanOfferRouter);
 // app.use('/api/v1/transaction', transactionRouter);
 
 export { app };

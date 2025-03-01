@@ -21,6 +21,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     );
   }
 };
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, PANNumber, mobileNumber } = req.body;
   if (
@@ -70,14 +71,14 @@ const registerUser = asyncHandler(async (req, res) => {
 
 //loginController
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username && !email) {
+  if (!email) {
     throw new ApiError(400, 'Username or Email is required');
   }
 
   const user = await User.findOne({
-    $or: [{ email }, { username }],
+    $or: [{ email }],
   });
 
   if (!user) {
