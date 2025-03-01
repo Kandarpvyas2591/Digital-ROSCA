@@ -9,6 +9,7 @@ import SavingsCircles, { groupsLoader } from './pages/Savings-Circles';
 import ProfilePage from './pages/Profile';
 import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
+import PaymentPage from './pages/Payment';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
         path: 'Sign-up',
         element: <SignUp />,
       },
+      {
+        path: '/payment',
+        element: <PaymentPage />
+      }
     ],
   },
 ]);
