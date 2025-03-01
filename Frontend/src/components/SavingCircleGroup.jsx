@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { HiUsers, HiClock, HiCurrencyDollar } from 'react-icons/hi2';
 import { getGroupById, joinGroup } from '../services/apiROSCAgroup';
 import Loader from './Loader';
-
+import AuthModal from '../components/AuthModal';
 async function handleJoinGroup(groupId) {
   const data = await joinGroup(groupId);
   console.log(data);
@@ -12,6 +12,11 @@ async function handleJoinGroup(groupId) {
 }
 
 function GroupDetail() {
+  const [isvisible, setIsvisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIconColor, setModalIconColor] = useState('');
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [roscaGroup, setRoscaGroup] = useState(null);
@@ -58,13 +63,29 @@ function GroupDetail() {
             Go Back
           </button>
           <button
-            onClick={() => handleJoinGroup(roscaGroup._id)}
+            onClick={() => {
+              handleJoinGroup(roscaGroup._id);
+              setModalTitle('Joined Successful!');
+              setModalMessage('Welcome to the Group!');
+              setModalIconColor('bg-purple-500');
+              setIsvisible(true);
+              setTimeout(() => {
+                window.location.href = '/dashboard';
+              }, 2500);
+            }}
             className="ml-4 mt-6 rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700"
           >
             Join
           </button>
         </div>
       </div>
+      <AuthModal
+        isVisible={isvisible}
+        title={modalTitle}
+        message={modalMessage}
+        iconColor={modalIconColor}
+        onClose={() => setIsvisible(false)}
+      />
     </div>
   );
 }
