@@ -8,14 +8,14 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 export const createGroup = asyncHandler(async (req, res) => {
   try {
     const newGroup = new ROSCAGroup({ ...req.body });
-    newGroup.admin = req.user._id;
+    // newGroup.admin = req.user._id;
 
     await newGroup.save();
     res
       .status(201)
       .json(new ApiResponse(201, newGroup, 'ROSCA group created successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });
 
@@ -25,7 +25,7 @@ export const getAllGroups = asyncHandler(async (req, res) => {
     const groups = await ROSCAGroup.find();
     res.status(200).json(groups);
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });
 
@@ -43,7 +43,7 @@ export const getGroupById = asyncHandler(async (req, res) => {
 
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json(ApiResponse(500, error.message, error));
+    res.status(500).json(ApiResponse(error.message, 500, error));
   }
 });
 
@@ -123,11 +123,11 @@ export const addMember = asyncHandler(async (req, res) => {
 
     // Check if member is already in the group
     if (group.members.includes(memberId)) {
-      return res.status(400).json(new ApiError(500, error.message, error));
+      return res.status(400).json(new ApiError(error.message, 500, error));
     }
 
     if (group.members.length >= group.maxMembers) {
-      return res.status(400).json(new ApiError(500, error.message, error));
+      return res.status(400).json(new ApiError(error.message, 500, error));
     }
 
     if (!user) {
@@ -153,6 +153,6 @@ export const addMember = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, group, 'Member added successfully'));
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message, error));
+    res.status(500).json(new ApiError(error.message, 500, error));
   }
 });
