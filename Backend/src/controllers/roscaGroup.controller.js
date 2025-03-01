@@ -147,7 +147,7 @@ export const addMember = asyncHandler(async (req, res) => {
     await user.save();
 
     // Add member to group
-    group.members.push(memberId);
+    group.members.push(req.user.id);
     await group.save();
 
     res

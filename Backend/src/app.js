@@ -34,11 +34,13 @@ app.use(xss());
 import userRouter from './routes/user.routes.js';
 import roscaGroupRouter from './routes/roscaGroup.routes.js';
 import loanOfferRouter from './routes/loanOffer.routes.js';
+import paymentRouter from './routes/payment.routes.js';
 //router declaration
 app.use('/api/v1/user', userRouter);
 // app.use('/api/v1/loan', loanRouter);
 app.use('/api/v1/rosca', roscaGroupRouter);
 app.use('/api/v1/loan', loanOfferRouter);
+app.use('/api/v1/payments', paymentRouter);
 // app.use('/api/v1/transaction', transactionRouter);
 
 export { app };

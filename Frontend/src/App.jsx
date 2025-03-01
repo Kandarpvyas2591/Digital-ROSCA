@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       {
         path:'loan-offers',
         element:<LoanOffers/>
-      }
+      },
       {
         path: '/payment',
         element: <PaymentPage />
