@@ -10,7 +10,7 @@ function LoanGiven({ user }) {
               key={loan._id}
               className="cursor-pointer rounded-lg bg-white p-4 shadow-md transition-transform hover:scale-105 hover:transform"
             >
-              <h3 className="text-lg font-semibold">Amount: ${loan.amount}</h3>
+              <h3 className="text-lg font-semibold">Amount: {loan.amount}</h3>
               <p>Interest Rate: {loan.interestRate}%</p>
               <p>Duration: {loan.duration} months</p>
             </div>
