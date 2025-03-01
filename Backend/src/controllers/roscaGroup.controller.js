@@ -112,9 +112,9 @@ export const deleteGroup = asyncHandler(async (req, res) => {
 
 export const addMember = asyncHandler(async (req, res) => {
   try {
-    const { memberId } = req.user._id;
+    // const { memberId } = req.user.id;
     const group = await ROSCAGroup.findById(req.params.id);
-    const user = await User.findById(memberId);
+    const user = await User.findById(req.user.id);
 
     if (!group)
       return res
@@ -122,7 +122,7 @@ export const addMember = asyncHandler(async (req, res) => {
         .json(new ApiError('ROSCA group not found', null, 404));
 
     // Check if member is already in the group
-    if (group.members.includes(memberId)) {
+    if (group.members.includes(req.user.id)) {
       return res.status(400).json(new ApiError(error.message, 500, error));
     }
 
@@ -131,7 +131,8 @@ export const addMember = asyncHandler(async (req, res) => {
     }
 
     if (!user) {
-      return res.status(404).json(new ApiError('User not found', null, 404));
+      // console.log(user);
+      return res.status(404).json(new ApiError('User not found', {}, 404));
     }
 
     if (user.joinedGroups.includes(req.params.id)) {
