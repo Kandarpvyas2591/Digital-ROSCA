@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     PANNumber: {
       type: String,
-      unique: true,
+      // unique: true,
       trim: true,
       minlength: [10, 'PAN Number must be 10 characters long'],
       maxlength: [10, 'PAN Number must be 10 characters long'],

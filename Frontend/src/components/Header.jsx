@@ -10,7 +10,9 @@ function Header() {
     // if cookie is present than setIsLoggedIn to true
     // print cookie
     console.log('cookie', document.cookie);
-    const user = document.cookie;
+    const user = document.cookie
+      .split(';')
+      .find((cookie) => cookie.includes('accessToken'));
     console.log(user, document.cookie);
     if (user) {
       setIsLoggedIn(true);
@@ -33,7 +35,7 @@ function Header() {
         </div>
 
         <div className="hidden gap-8 md:flex">
-          {['Dashboard', 'Group Creation', 'Savings Circles'].map((item) => (
+          {['Dashboard', 'Group Creation', 'Savings Circles','View Loans'].map((item) => (
             <span
               key={item}
               className="cursor-pointer border-b-2 border-transparent pb-1 text-lg text-gray-700 transition duration-300 hover:border-violet-500 hover:text-violet-600"
@@ -52,6 +54,7 @@ function Header() {
           <Button
             onClick={() => {
               logOut();
+              window.location.href = '/';
             }}
           >
             Log Out

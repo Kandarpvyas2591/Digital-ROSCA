@@ -7,6 +7,8 @@ import Loader from './Loader';
 async function handleJoinGroup(groupId) {
   const data = await joinGroup(groupId);
   console.log(data);
+  await data.json();
+  console.log(data);
 }
 
 function GroupDetail() {
