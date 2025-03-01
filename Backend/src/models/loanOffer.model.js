@@ -7,14 +7,11 @@ const loanOfferSchema = new Schema(
       enum: ['rosca-group', 'individual-user'],
       required: true,
     },
-    lenderUser: {
+    lenderType: { type: String, enum: ["User", "ROSCAGroup"], required: true }, // Indicates if sender is a user or a group
+    lender: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
-      // required: true,
-    },
-    lenderGroup: {
-      type: Schema.Types.ObjectId,
-      ref: 'ROSCAGroup',
+      refPath: "lenderType",
+      required: true,
     },
     amount: {
       type: Number,
@@ -40,18 +37,9 @@ const loanOfferSchema = new Schema(
       enum: ['active', 'expired', 'completed', 'declined'],
       default: 'active',
     },
-    type: {
-      type: String,
-      enum: ['offer', 'request'],
-      required: true,
-    },
-    acceptedByUser: {
+    acceptedBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-    },
-    acceptedByGroup: {
-      type: Schema.Types.ObjectId,
-      ref: 'ROSCAGroup',
     },
 
     requiredDocuments: [
