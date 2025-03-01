@@ -22,5 +22,5 @@ router.route('/change-password').post(verifyJWT, changeCurrentPassword);
 
 router.route('/getme').get(verifyJWT, getMe);
 
-router.route('/UpdateUser').patch(verifyJWT, updateUser);
+router.route('/updateUser').patch(verifyJWT, updateUser);
 export default router;
