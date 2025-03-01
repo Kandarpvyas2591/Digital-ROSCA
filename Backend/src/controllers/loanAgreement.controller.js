@@ -33,11 +33,13 @@ export const createLoanAgreement = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let uploadedDocuments = loanOffer.uploadedDocuments || [];
+  let aadharCardUrl = '';
+  let incomeCertificateUrl = '';
 
   // 🔹 If `LoanOffer.type === 'request'`, use documents already uploaded in `LoanOffer`
   if (loanOffer.type === 'request' && loanOffer.uploadedDocuments) {
-    uploadedDocuments = loanOffer.uploadedDocuments;
+    aadharCardUrl = loanOffer.uploadedDocuments[0];
+    incomeCertificateUrl = loanOffer.uploadedDocuments[1];
   }
 
   // 🔹 If `LoanOffer.type === 'offer'`, borrower must upload the documents
@@ -60,7 +62,7 @@ export const createLoanAgreement = asyncHandler(async (req, res, next) => {
     if (!aadharCardUpload) {
       return next(new ApiError(500, 'Failed to upload Aadhar card'));
     }
-    uploadedDocuments.push(aadharCardUpload.secure_url);
+    aadharCardUrl = aadharCardUpload.secure_url;
 
     // Upload Income Certificate
     const incomeCertificateBuffer = req.files.incomeCertificate[0].buffer;
@@ -71,7 +73,7 @@ export const createLoanAgreement = asyncHandler(async (req, res, next) => {
     if (!incomeCertificateUpload) {
       return next(new ApiError(500, 'Failed to upload Income Certificate'));
     }
-    uploadedDocuments.push(incomeCertificateUpload.secure_url);
+    incomeCertificateUrl = incomeCertificateUpload.secure_url;
   } else {
     return next(new ApiError(400, 'Uploaded documents are missing.'));
   }
@@ -96,7 +98,7 @@ export const createLoanAgreement = asyncHandler(async (req, res, next) => {
     monthlyPayment: monthlyPayment,
     // amountLeft: amountWithInterest,
     requiredDocuments: ['Aadhar Card', 'Income Certificate'], // Always required for borrower
-    uploadedDocuments,
+    uploadedDocuments: [aadharCardUrl, incomeCertificateUrl],
     startDate: new Date(),
     endDate: new Date(
       new Date().setMonth(new Date().getMonth() + loanOffer.duration)

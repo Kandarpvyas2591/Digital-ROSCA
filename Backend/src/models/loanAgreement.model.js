@@ -64,6 +64,11 @@ const loanAgreementSchema = new Schema(
       type: Date,
       required: true,
     },
+    uploadedDocuments: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
