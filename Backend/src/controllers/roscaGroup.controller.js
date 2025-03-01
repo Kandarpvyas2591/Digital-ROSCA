@@ -10,6 +10,10 @@ export const createGroup = asyncHandler(async (req, res) => {
     const newGroup = new ROSCAGroup({ ...req.body });
     newGroup.admin = req.user.id;
     newGroup.members.push(req.user.id);
+    const user = await User.findById(req.user.id);
+    user.joinedGroups.push(newGroup.id);
+    user.createdGroup.push(newGroup.id);
+    await user.save();
 
     await newGroup.save();
     res
