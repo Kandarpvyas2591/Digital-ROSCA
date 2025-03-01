@@ -1,5 +1,8 @@
 import express from 'express';
-import { createLoanOffer } from '../controllers/loanOffer.controller.js';
+import {
+  createLoanOffer,
+  getAllLoanOffers,
+} from '../controllers/loanOffer.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
@@ -10,5 +13,5 @@ router.route('/createLoan').post(
   upload.fields([{ name: 'aadharCard' }, { name: 'incomeCertificate' }]), // Handle file uploads for requests
   createLoanOffer
 );
-
+router.route('/getAllLoanOffer').get(verifyJWT, getAllLoanOffers);
 export default router;
