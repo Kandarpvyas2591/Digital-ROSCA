@@ -1,173 +1,232 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-function GroupCreation() {
-  const [members, setMembers] = useState([]);
-  const [memberInput, setMemberInput] = useState({
-    name: '',
-    email: '',
-    phone: '',
-  });
+export default function GroupCreation() {
+  const [groupName, setGroupName] = useState("");
+  const [description, setDescription] = useState("");
+  const [groupType, setGroupType] = useState("normal");
+  const [cycleDuration, setWithdrawalDuration] = useState("");
+  const [contributionAmount, setContributionAmount] = useState("");
+  const [maxMembers, setMaxMembers] = useState("");
+  const [cycleStartDate, setStartDate] = useState("");
+  const [registrationDeadline, setRegistrationDeadline] = useState("");
+  const [payoutPercentage, setPayoutPercentage] = useState(""); // Only for Lender
+  const [payoutAmount, setPayoutAmount] = useState(0); // Dynamically calculated
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const handleAddMember = () => {
-    if (memberInput.name.trim() !== '') {
-      setMembers([...members, memberInput.name]);
-      setMemberInput({ name: '', email: '', phone: '' });
+  // Update payout amount if group type is lender
+  const handleContributionChange = (e) => {
+    const amount = e.target.value;
+    setContributionAmount(amount);
+    if (groupType === "lender" && payoutPercentage) {
+      setPayoutAmount((amount * payoutPercentage) / 100); // Calculate payout
     }
   };
 
-  const handleRemoveMember = (index) => {
-    const updatedMembers = [...members];
-    updatedMembers.splice(index, 1);
-    setMembers(updatedMembers);
+  // Update payout amount if payout percentage changes
+  const handlePayoutChange = (e) => {
+    const percentage = e.target.value;
+    setPayoutPercentage(percentage);
+    if (groupType === "lender" && contributionAmount) {
+      setPayoutAmount((contributionAmount * percentage) / 100); // Calculate payout
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const requestData = {
+      name: groupName,
+      description,
+      groupType,
+      cycleDuration,
+      contributionAmount,
+      maxMembers,
+      cycleStartDate,
+      registrationDeadline,
+      ...(groupType === "lender" && {payoutAmount }), // Include only for lenders
+    };
+
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/rosca/create-group", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("ROSCA Group Created Successfully!");
+      } else {
+        setMessage(data.message || "Error creating group.");
+        console.log(data);
+      }
+    } catch (error) {
+      setMessage("Failed to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 md:p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-4 shadow-lg sm:max-w-lg sm:p-6 md:max-w-xl md:p-10 lg:max-w-2xl lg:p-12">
-        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-800 sm:text-3xl">
+    <section className="flex items-center justify-center w-full min-h-screen p-4 bg-gray-100">
+      <div className="w-full max-w-xl p-6 bg-white rounded-lg shadow-md sm:p-8 md:p-10 lg:p-12">
+        <h1 className="mb-8 text-3xl font-semibold text-center text-purple-600">
           Set Up Your ROSCA Group
-        </h2>
+        </h1>
 
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Group Name */}
           <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Contribution Cycle Duration
-            </label>
-            <select className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400">
-              <option>Weekly</option>
-              <option>Monthly</option>
-              <option>Yearly</option>
+            <label className="block text-sm font-medium text-gray-700">Group Name</label>
+            <input
+              type="text"
+              placeholder="Enter Group Name"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <textarea
+              placeholder="Enter Group Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              rows="3"
+              required
+            />
+          </div>
+
+          {/* Group Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Group Type</label>
+            <select
+              value={groupType}
+              onChange={(e) => {
+                setGroupType(e.target.value);
+                if (e.target.value !== "lender") {
+                  setPayoutPercentage("");
+                  setPayoutAmount(0);
+                }
+              }}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+            >
+              <option value="normal">Normal</option>
+              <option value="lender">Lender</option>
             </select>
           </div>
 
-          <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Number of Contributions
-            </label>
-            <input
-              type="number"
-              placeholder="Enter Number"
-              className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Start Date
-            </label>
-            <input
-              type="date"
-              className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Add Member
-            </label>
-            <div className="rounded-lg bg-gray-50 p-4 shadow-sm">
+          {/* Payout Percentage (Only for Lender Group Type) */}
+          {groupType === "lender" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Payout Percentage</label>
               <input
-                type="text"
-                placeholder="Member Name"
-                value={memberInput.name}
-                onChange={(e) =>
-                  setMemberInput({ ...memberInput, name: e.target.value })
-                }
-                className="mb-3 w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
+                type="number"
+                placeholder="Enter Payout Percentage"
+                value={payoutPercentage}
+                onChange={handlePayoutChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+                required
               />
-              <input
-                type="email"
-                placeholder="Member Email"
-                value={memberInput.email}
-                onChange={(e) =>
-                  setMemberInput({ ...memberInput, email: e.target.value })
-                }
-                className="mb-3 w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-              />
-              <input
-                type="tel"
-                placeholder="Member Phone Number"
-                value={memberInput.phone}
-                onChange={(e) =>
-                  setMemberInput({ ...memberInput, phone: e.target.value })
-                }
-                className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleAddMember}
-            className="w-full rounded-lg bg-purple-600 py-3 font-medium text-white transition duration-200 hover:bg-purple-700"
-          >
-            Add Another Member
-          </button>
-
-          {members.length > 0 && (
-            <div className="mt-4 rounded-lg bg-gray-100 p-4">
-              <h3 className="mb-2 font-medium text-gray-800">Added Members:</h3>
-              <ul className="space-y-2">
-                {members.map((member, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm"
-                  >
-                    <span className="text-gray-700">{member}</span>
-                    <button
-                      onClick={() => handleRemoveMember(index)}
-                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white transition duration-200 hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
 
+          {/* Contribution Amount */}
           <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Payout Frequency
-            </label>
-            <select className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400">
-              <option>Weekly</option>
-              <option>Monthly</option>
-              <option>Yearly</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1 block font-medium text-gray-700">
-              Payout Amount
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Contribution Amount</label>
             <input
-              type="text"
-              placeholder="Enter amount or formula"
-              className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
+              type="number"
+              placeholder="Enter Contribution Amount"
+              value={contributionAmount}
+              onChange={handleContributionChange}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
             />
           </div>
 
-          <div>
-            <label className="block font-medium text-gray-700">
-              Special Conditions
-            </label>
-            <div className="mt-2 flex items-center">
-              <input type="checkbox" className="h-5 w-5 text-purple-600" />
-              <span className="ml-2 text-gray-700">Emergency Withdrawals</span>
+          {/* Payout Amount (Calculated Automatically for Lender) */}
+          {groupType === "lender" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Payout Amount</label>
+              <input
+                type="number"
+                value={payoutAmount}
+                readOnly
+                className="w-full p-3 border bg-gray-100 rounded-lg focus:ring-2 focus:ring-purple-400"
+              />
             </div>
+          )}
+
+          {/* Withdrawal Duration */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Withdrawal Duration</label>
+            <input
+              type="text"
+              placeholder="Enter Duration (e.g., after 1 Month, 2 month etc)"
+              value={cycleDuration}
+              onChange={(e) => setWithdrawalDuration(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
           </div>
 
-          <button
-            type="submit"
-            className="mt-6 w-full rounded-lg bg-purple-600 py-3 font-medium text-white transition duration-200 hover:bg-purple-700"
-          >
-            Create ROSCA Group
-          </button>
+          {/* Max Members */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Max Members</label>
+            <input
+              type="number"
+              placeholder="Enter Duration (e.g., Weekly, Monthly)"
+              value={maxMembers}
+              onChange={(e) => setMaxMembers(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
+
+          {/* Start Date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Start Date</label>
+            <input
+              type="date"
+              value={cycleStartDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
+
+          {/* Registration Deadline */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Registration Deadline</label>
+            <input
+              type="date"
+              value={registrationDeadline}
+              onChange={(e) => setRegistrationDeadline(e.target.value)}
+              max={cycleStartDate}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
+              required
+              disabled={!cycleStartDate}
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div>
+            <button type="submit" className="w-full py-3 mt-6 font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700">
+              {loading ? "Creating..." : "Create ROSCA Group"}
+            </button>
+          </div>
+
+          {/* Success/Error Message */}
+          {message && <p className="mt-4 text-center text-purple-600">{message}</p>}
         </form>
       </div>
-    </div>
+    </section>
   );
 }
-
-export default GroupCreation;
