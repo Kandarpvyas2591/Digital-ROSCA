@@ -1,24 +1,25 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { HiPencilSquare } from 'react-icons/hi2';
 import { getMe } from '../services/apiROSCAgroup';
 
-const User = await getMe();
-
 export default function ProfilePage() {
-  // const [user, setUser] = useState({
-  //   name: 'Kandarp Vyas',
-  //   email: 'kandarpvyas2591@gmail.com',
-  //   pan: 'ABCDE1234F',
-  //   mobile: '9876543210',
-  //   reputation: 85,
-  //   joinedGroups: ['Wealth Builders', 'Smart Savers'],
-  //   createdGroups: ['Future Fund'],
-  // });
-  console.log('User:', User);
-  const [user, setUser] = useState(User);
-
+  const [user, setUser] = useState(null);
   const [edit, setEdit] = useState(false);
   const formRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const userData = await getMe();
+        setUser(userData);
+        console.log(userData);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    }
+
+    fetchUser();
+  }, []);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -42,14 +43,12 @@ export default function ProfilePage() {
     setEdit(false);
   }
 
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      {/* Top Navbar */}
-      {/* <nav className="flex justify-between bg-purple-500 px-6 py-4 text-white">
-        <h1 className="text-xl font-bold">Profile Settings</h1>
-      </nav> */}
-
-      {/* Profile Section */}
       <div className="mx-auto max-w-3xl rounded bg-white p-6 shadow-md">
         <h2 className="mb-4 text-2xl font-semibold text-gray-700">
           Your Account
@@ -131,7 +130,6 @@ export default function ProfilePage() {
           )}
         </form>
 
-        {/* Groups Section */}
         <div className="mt-6">
           <label className="text-gray-600">Reputation Score</label>
           <input
@@ -145,7 +143,7 @@ export default function ProfilePage() {
           <h3 className="text-xl font-semibold text-gray-700">Joined Groups</h3>
           <ul className="list-disc pl-6 text-gray-600">
             {user?.joinedGroups?.map((group, index) => (
-              <li key={index}>{group}</li>
+              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
             ))}
           </ul>
         </div>
@@ -156,7 +154,7 @@ export default function ProfilePage() {
           </h3>
           <ul className="list-disc pl-6 text-gray-600">
             {user?.createdGroups?.map((group, index) => (
-              <li key={index}>{group}</li>
+              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
             ))}
           </ul>
         </div>

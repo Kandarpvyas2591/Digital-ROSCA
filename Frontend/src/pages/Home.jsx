@@ -8,8 +8,10 @@ import {
 } from 'react-icons/hi2';
 import bg_img from '../assets/bg_img.png';
 import Footer from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+  const navigate = useNavigate();
   return (
     <div className="flex min-h-screen flex-col">
       <div
@@ -26,7 +28,10 @@ function Home() {
         <span className="font-sans text-2xl text-white">
           Collaborate to save smarter with Digital ROSCA
         </span>
-        <button className="h-12 w-32 rounded-lg bg-violet-500 text-white shadow-md hover:bg-violet-600">
+        <button
+          className="h-12 w-32 rounded-lg bg-violet-500 text-white shadow-md hover:bg-violet-600"
+          onClick={() => navigate('/sign-up')}
+        >
           Sign Up
         </button>
       </div>

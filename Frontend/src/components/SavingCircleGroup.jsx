@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HiUsers, HiClock, HiCurrencyDollar } from 'react-icons/hi2';
-import { getGroupById } from '../services/apiROSCAgroup';
+import { getGroupById, joinGroup } from '../services/apiROSCAgroup';
 import Loader from './Loader';
+
+async function handleJoinGroup(groupId) {
+  const data = await joinGroup(groupId);
+  console.log(data);
+  await data.json();
+  console.log(data);
+}
 
 function GroupDetail() {
   const { id } = useParams();
@@ -43,13 +50,20 @@ function GroupDetail() {
             <strong>Members:</strong> {roscaGroup.members.join(', ')}
           </p>
         </div>
-
-        <button
-          onClick={() => navigate(-1)}
-          className="mt-6 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
-        >
-          Go Back
-        </button>
+        <div className="flex justify-between">
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-6 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+          >
+            Go Back
+          </button>
+          <button
+            onClick={() => handleJoinGroup(roscaGroup._id)}
+            className="ml-4 mt-6 rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700"
+          >
+            Join
+          </button>
+        </div>
       </div>
     </div>
   );

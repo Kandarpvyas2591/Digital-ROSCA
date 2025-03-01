@@ -23,15 +23,19 @@ export async function getGroupById(id) {
 }
 
 export async function login(data) {
-  const data1 = await fetch(`${API_URL}/user/login`, {
+  const res = await fetch(`${API_URL}/user/login`, {
     method: 'POST',
-    credentials: 'include',
+    credentials: 'include', // Include credentials in the request
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
-  return data1;
+
+  if (!res.ok) throw new Error('Failed to login');
+
+  const userData = await res.json();
+  return userData;
 }
 
 export async function signUp(data) {
@@ -52,4 +56,28 @@ export async function getMe() {
   });
   const data = await res.json();
   return data.data;
+}
+
+export async function joinGroup(id) {
+  try {
+    const data = await fetch(`${API_URL}/rosca/add-member/${id}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+    return data.json();
+    // console.log('Joined group');
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function logOut() {
+  await fetch(`${API_URL}/user/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
 }
