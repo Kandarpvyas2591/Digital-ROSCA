@@ -82,7 +82,6 @@ export default function GroupCreation() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Group Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Group Name
@@ -97,7 +96,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Description
@@ -112,7 +110,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Group Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Group Type
@@ -133,7 +130,6 @@ export default function GroupCreation() {
             </select>
           </div>
 
-          {/* Payout Percentage (Only for Lender Group Type) */}
           {groupType === 'lender' && (
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -150,7 +146,6 @@ export default function GroupCreation() {
             </div>
           )}
 
-          {/* Contribution Amount */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Contribution Amount
@@ -165,7 +160,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Payout Amount (Calculated Automatically for Lender) */}
           {groupType === 'lender' && (
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -180,7 +174,6 @@ export default function GroupCreation() {
             </div>
           )}
 
-          {/* Withdrawal Duration */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Withdrawal Duration
@@ -195,7 +188,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Max Members */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Max Members
@@ -210,7 +202,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Start Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Start Date
@@ -224,7 +215,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Registration Deadline */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Registration Deadline
@@ -240,7 +230,6 @@ export default function GroupCreation() {
             />
           </div>
 
-          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -250,7 +239,6 @@ export default function GroupCreation() {
             </button>
           </div>
 
-          {/* Success/Error Message */}
           {message && (
             <p className="mt-4 text-center text-purple-600">{message}</p>
           )}

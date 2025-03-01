@@ -9,7 +9,7 @@ const loanOfferSchema = new Schema(
     },
     offeredBy: {
       type: String,
-      enum: ['rosca-group', 'individual-user'],
+      // enum: ['rosca-group', 'individual-user'],
       required: true,
     },
     lenderType: { type: String, enum: ['User', 'ROSCAGroup'], required: true }, // Indicates if sender is a user or a group

@@ -12,6 +12,7 @@ import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
 import LoanAgreement from './pages/LoanAgreement';
 import TransactionHistory from './components/TransactionHistory';
+import CreateLoan from './pages/CreateLoan';
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
         path: '/loan-agreement',
         element: <LoanAgreement />,
       },
+      {
+        path:'/create-loan',
+        element: <CreateLoan />,
+      }
     ],
   },
 ]);
