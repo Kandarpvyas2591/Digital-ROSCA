@@ -67,10 +67,10 @@ function SavingsCircles() {
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     <HiClock className="text-blue-500" />
-                    {group.cycleDuration}
+                    {group.cycleDuration} Months
                   </td>
                   <td className="px-6 py-4 text-gray-700">
-                    {group.members} members
+                    {group.members.length} members
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button

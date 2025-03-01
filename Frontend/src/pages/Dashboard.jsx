@@ -13,11 +13,7 @@ function Dashboard() {
       {isLoading && <Loader />}
       <SideBar />
       <div className="overflow-scroll bg-gray-50 p-5 pb-24">
-        {location.pathname === '/dashboard' ? (
-          <TransactionHistory />
-        ) : (
-          <Outlet />
-        )}
+        {location.pathname === '/dashboard' ? <div>Dashboard</div> : <Outlet />}
       </div>
     </div>
   );

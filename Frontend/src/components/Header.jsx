@@ -10,7 +10,9 @@ function Header() {
     // if cookie is present than setIsLoggedIn to true
     // print cookie
     console.log('cookie', document.cookie);
-    const user = document.cookie;
+    const user = document.cookie
+      .split(';')
+      .find((cookie) => cookie.includes('accessToken'));
     console.log(user, document.cookie);
     if (user) {
       setIsLoggedIn(true);
@@ -52,6 +54,7 @@ function Header() {
           <Button
             onClick={() => {
               logOut();
+              window.location.href = '/';
             }}
           >
             Log Out

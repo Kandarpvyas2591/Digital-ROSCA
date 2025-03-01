@@ -11,6 +11,7 @@ import SignIn from './pages/Sign-in';
 import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
 import PaymentPage from './pages/Payment';
+import TransactionHistory from './components/TransactionHistory';
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'reports',
-            element: <div>Reports</div>,
+            element: <TransactionHistory />,
           },
           {
             path: 'profile',
@@ -61,13 +62,13 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path:'loan-offers',
-        element:<LoanOffers/>
+        path: 'loan-offers',
+        element: <LoanOffers />,
       },
       {
         path: '/payment',
-        element: <PaymentPage />
-      }
+        element: <PaymentPage />,
+      },
     ],
   },
 ]);
