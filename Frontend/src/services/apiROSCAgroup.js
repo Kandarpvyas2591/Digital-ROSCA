@@ -65,6 +65,7 @@ export async function joinGroup(id) {
     headers: {
       'Content-Type': 'application/json',
     },
+    // body: JSON.stringify({}),
   });
 }
 
