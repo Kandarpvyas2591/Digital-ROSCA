@@ -71,6 +71,7 @@ export const createTransaction = asyncHandler(async (req, res) => {
       senderEntity.walletAmount -= amount;
       receiverEntity.walletAmount += amount;
       newTransaction.status = 'completed';
+      newTransaction.orderId = order.id;
 
       await senderEntity.save();
       await receiverEntity.save();
