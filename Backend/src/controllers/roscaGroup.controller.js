@@ -115,7 +115,7 @@ export const addMember = asyncHandler(async (req, res) => {
     // const { memberId } = req.user.id;
     const group = await ROSCAGroup.findById(req.params.id);
     const user = await User.findById(req.user.id);
-
+    console.log(req.params.id, req.user.id);
     if (!group)
       return res
         .status(404)
