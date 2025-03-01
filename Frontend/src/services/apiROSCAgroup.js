@@ -23,7 +23,7 @@ export async function getGroupById(id) {
 }
 
 export async function login(data) {
-  await fetch(`${API_URL}/user/login`, {
+  const data1 = await fetch(`${API_URL}/user/login`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -31,6 +31,7 @@ export async function login(data) {
     },
     body: JSON.stringify(data),
   });
+  return data1;
 }
 
 export async function signUp(data) {
@@ -42,4 +43,13 @@ export async function signUp(data) {
     },
     body: JSON.stringify(data),
   });
+}
+
+export async function getMe() {
+  const res = await fetch(`${API_URL}/user/getme`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  const data = await res.json();
+  return data.data;
 }

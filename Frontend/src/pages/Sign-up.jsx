@@ -10,7 +10,11 @@ function SignUp() {
     const formData = new FormData(formRef.current);
     const data = Object.fromEntries(formData.entries());
     console.log('Form Submitted', data);
-    await signUp(data);
+    const user = await signUp(data);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+      window.location.href = '/dashboard'; // Redirect to dashboard or any other page
+    }
   };
 
   return (
