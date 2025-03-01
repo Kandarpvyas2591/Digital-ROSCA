@@ -2,7 +2,10 @@ import { useState, useRef } from 'react';
 import { HiPencilSquare } from 'react-icons/hi2';
 import { getMe } from '../services/apiROSCAgroup';
 
-const User = await getMe();
+const User = async function () {
+  const User = await getMe();
+  return User;
+};
 
 export default function ProfilePage() {
   // const [user, setUser] = useState({

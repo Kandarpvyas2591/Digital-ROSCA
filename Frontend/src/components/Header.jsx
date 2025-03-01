@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import image from '../assets/image.png';
 import Button from './Button';
+import { logOut } from '../services/apiROSCAgroup';
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if the user is logged in (this is just a placeholder, replace with your actual logic)
-    const user = localStorage.getItem('user'); // Example: Check local storage for user data
+    // if cookie is present than setIsLoggedIn to true
+    // print cookie
+    console.log('cookie', document.cookie);
+    const user = document.cookie;
+    console.log(user, document.cookie);
     if (user) {
       setIsLoggedIn(true);
     }
@@ -44,7 +48,15 @@ function Header() {
       </div>
 
       <div className="ml-auto flex items-center gap-4">
-        {!isLoggedIn && (
+        {isLoggedIn ? (
+          <Button
+            onClick={() => {
+              logOut();
+            }}
+          >
+            Log Out
+          </Button>
+        ) : (
           <>
             <a href="/sign-in">
               <Button>Login</Button>

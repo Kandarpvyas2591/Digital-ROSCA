@@ -12,7 +12,6 @@ function SignUp() {
     console.log('Form Submitted', data);
     const user = await signUp(data);
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
       window.location.href = '/dashboard'; // Redirect to dashboard or any other page
     }
   };

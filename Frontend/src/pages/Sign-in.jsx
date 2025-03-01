@@ -13,10 +13,9 @@ function SignIn() {
 
     const user = await login(data);
     console.log('User:', user);
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-      window.location.href = '/dashboard'; // Redirect to dashboard or any other page
-    }
+    // if (user) {
+    //   window.location.href = '/dashboard'; // Redirect to dashboard or any other page
+    // }
   };
 
   return (

@@ -97,8 +97,9 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   const options = {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
+    sameSite: 'None', // Ensure cookies are sent with cross-site requests
   };
   return res
     .status(200)
