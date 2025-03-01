@@ -12,6 +12,7 @@ import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
 import LoanAgreement from './pages/LoanAgreement';
 import TransactionHistory from './components/TransactionHistory';
+import GroupDetail from './components/GroupDetail';
 import CreateLoan from './pages/CreateLoan';
 
 const router = createBrowserRouter([
@@ -28,8 +29,8 @@ const router = createBrowserRouter([
         element: <Dashboard />,
         children: [
           {
-            path: 'overview',
-            element: <div>Overview</div>,
+            path: 'group/:id',
+            element: <GroupDetail />,
           },
           {
             path: 'reports',

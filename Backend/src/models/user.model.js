@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       minlength: [10, 'PAN Number must be 10 characters long'],
       maxlength: [10, 'PAN Number must be 10 characters long'],
+      sparse: true,
     },
     refreshToken: {
       type: String,

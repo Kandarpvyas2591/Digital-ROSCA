@@ -24,26 +24,22 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, PANNumber, mobileNumber } = req.body;
-  if (
-    [email, username, password, PANNumber, mobileNumber].some(
-      (field) => field?.trim() === ''
-    )
-  ) {
-    throw new ApiError(400, 'All fields are required');
-  }
+  // if (
+  //   [email, username, password, PANNumber, mobileNumber].some(
+  //     (field) => field?.trim() === ''
+  //   )
+  // ) {
+  //   throw new ApiError(400, 'All fields are required');
+  // }
 
   const existedUser = await User.findOne({
-    $or: [{ username }, { email }, { PANNumber }, { mobileNumber }],
+    $or: [{ email }, { mobileNumber }],
   });
 
   if (existedUser) {
     const conflictField =
       existedUser.email === email
         ? 'Email'
-        : existedUser.username === username
-        ? 'Username'
-        : existedUser.PANNumber === PANNumber
-        ? 'PAN Number'
         : 'Mobile Number';
     throw new ApiError(409, `User with ${conflictField} already exists`);
   }
@@ -145,7 +141,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
     .select('-password -refreshToken')
-    .populate('joinedGroups');
+    .populate('joinedGroups')
+    .populate('createdGroup');
   if (!user) {
     throw new ApiError(404, 'User not found');
   }

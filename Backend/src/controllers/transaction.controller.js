@@ -138,7 +138,7 @@ export const getUserTransactions = asyncHandler(async (req, res) => {
       $or: [{ sender: req.params.id }, { receiver: req.params.id }],
     }).populate({
       path: 'sender receiver',
-      select: 'username name'
+      select: 'username name',
     });
     res
       .status(200)
