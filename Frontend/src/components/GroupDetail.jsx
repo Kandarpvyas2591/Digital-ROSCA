@@ -49,11 +49,11 @@ const GroupDetail = () => {
         </div>
         <div className="rounded-lg bg-gray-100 p-4">
           <p className="font-semibold">Contribution Amount:</p>
-          <p>${group.contributionAmount}</p>
+          <p>{group.contributionAmount}</p>
         </div>
         <div className="rounded-lg bg-gray-100 p-4">
           <p className="font-semibold">Wallet Amount:</p>
-          <p>${group.walletAmount}</p>
+          <p>{group.walletAmount}</p>
         </div>
         <div className="rounded-lg bg-gray-100 p-4">
           <p className="font-semibold">Group Type:</p>

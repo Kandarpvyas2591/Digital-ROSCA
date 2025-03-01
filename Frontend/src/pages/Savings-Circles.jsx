@@ -33,11 +33,11 @@ function SavingsCircles() {
   return (
     <div className="flex min-h-screen justify-center bg-gray-100 p-6">
       <div className="w-full max-w-5xl rounded-lg bg-white p-6 shadow-lg">
-        <h2 className="mb-6 text-center text-3xl font-bold text-gray-800">
+        <h2 className="mb-6 text-center text-3xl font-bold text-purple-600">
           Join a ROSCA Group
         </h2>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg">
           <table className="w-full border-collapse rounded-lg">
             <thead>
               <tr className="bg-violet-600 text-left text-white">
