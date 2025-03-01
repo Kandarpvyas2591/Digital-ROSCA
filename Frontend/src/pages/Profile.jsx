@@ -12,6 +12,7 @@ export default function ProfilePage() {
       try {
         const userData = await getMe();
         setUser(userData);
+        console.log(userData);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       }
@@ -142,7 +143,7 @@ export default function ProfilePage() {
           <h3 className="text-xl font-semibold text-gray-700">Joined Groups</h3>
           <ul className="list-disc pl-6 text-gray-600">
             {user?.joinedGroups?.map((group, index) => (
-              <li key={index}>{group}</li>
+              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
             ))}
           </ul>
         </div>
@@ -153,7 +154,7 @@ export default function ProfilePage() {
           </h3>
           <ul className="list-disc pl-6 text-gray-600">
             {user?.createdGroups?.map((group, index) => (
-              <li key={index}>{group}</li>
+              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
             ))}
           </ul>
         </div>

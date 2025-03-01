@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTransaction, getAllTransactions, getGroupTransactions, getTransactionById, getUserTransactions } from "../controllers/transaction.controller";
+import { createTransaction, getAllTransactions, getGroupTransactions, getTransactionById, getUserTransactions } from "../controllers/transaction.controller.js";
 
 const router = Router();
 
@@ -12,3 +12,5 @@ router.get("/get-transaction/:id", getTransactionById);
 router.get("/get-user-transactions/:id", getUserTransactions);
 
 router.get("/get-group-transactions/:id", getGroupTransactions);
+
+export default router;

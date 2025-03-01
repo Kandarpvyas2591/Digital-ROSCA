@@ -62,13 +62,13 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path:'view-loans',
-        element:<LoanOffers/>
+        path: 'view-loans',
+        element: <LoanOffers />,
       },
       {
         path: '/loan-agreement',
-        element: <LoanAgreement />
-      }
+        element: <LoanAgreement />,
+      },
     ],
   },
 ]);

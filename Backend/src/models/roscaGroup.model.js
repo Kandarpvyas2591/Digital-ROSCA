@@ -41,6 +41,7 @@ const groupSchema = new Schema(
     },
     cycleNumber: {
       type: Number,
+      default: 0,
       // required: true,
     },
     walletAmount: {
