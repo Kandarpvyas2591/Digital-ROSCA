@@ -10,7 +10,13 @@ function SignIn() {
     const formData = new FormData(formRef.current);
     const data = Object.fromEntries(formData.entries());
     console.log('Form Submitted', data);
-    await login(data);
+
+    const user = await login(data);
+    console.log('User:', user);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+      window.location.href = '/dashboard'; // Redirect to dashboard or any other page
+    }
   };
 
   return (
