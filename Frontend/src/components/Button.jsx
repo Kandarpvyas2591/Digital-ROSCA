@@ -1,7 +1,10 @@
-function Button({ children }) {
+function Button({ children, onClick }) {
   return (
     /* From Uiverse.io by Javierrocadev */
-    <button className="text-l group relative z-10 flex h-9 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-md border-[3px] p-2 font-normal text-[#927AF4]">
+    <button
+      className="text-l group relative z-10 flex h-9 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-md border-[3px] p-2 font-normal text-[#927AF4]"
+      onClick={onClick}
+    >
       <span className="relative z-10 transition-colors duration-100 group-hover:text-white">
         {children}
       </span>
