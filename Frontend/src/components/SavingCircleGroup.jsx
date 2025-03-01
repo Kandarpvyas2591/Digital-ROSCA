@@ -1,66 +1,46 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { HiUsers, HiClock, HiCurrencyDollar } from 'react-icons/hi2';
-
-const roscaGroups = [
-  {
-    id: 1,
-    name: 'Wealth Builders',
-    amount: '$500',
-    duration: '6 months',
-    members: ['Alice', 'Bob', 'Charlie'],
-  },
-  {
-    id: 2,
-    name: 'Smart Savers',
-    amount: '$300',
-    duration: '3 months',
-    members: ['David', 'Eve', 'Frank'],
-  },
-  {
-    id: 3,
-    name: 'Future Fund',
-    amount: '$700',
-    duration: '12 months',
-    members: ['Grace', 'Hank', 'Ivy'],
-  },
-  {
-    id: 4,
-    name: 'Growth Circle',
-    amount: '$200',
-    duration: '4 months',
-    members: ['Jack', 'Kelly', 'Leo'],
-  },
-];
+import { getGroupById } from '../services/apiROSCAgroup';
+import Loader from './Loader';
 
 function GroupDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const group = roscaGroups.find((g) => g.id === parseInt(id));
-  console.log(group);
+  const [roscaGroup, setRoscaGroup] = useState(null);
 
-  if (!group) {
-    return (
-      <div className="mt-10 text-center text-red-500">Group not found!</div>
-    );
+  useEffect(() => {
+    async function fetchGroup() {
+      const group = await getGroupById(id);
+      setRoscaGroup(group);
+      console.log('Group Data:', group); // Debug log
+    }
+    fetchGroup();
+  }, [id]);
+
+  if (!roscaGroup) {
+    return <Loader />;
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gray-100 p-8">
       <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg">
-        <h2 className="mb-4 text-3xl font-bold text-gray-800">{group.name}</h2>
+        <h2 className="mb-4 text-3xl font-bold text-gray-800">
+          {roscaGroup.name}
+        </h2>
 
         <div className="space-y-2 text-gray-700">
           <p className="flex items-center gap-2">
             <HiCurrencyDollar className="text-green-500" />
-            <strong>Contribution:</strong> {group.amount}
+            <strong>Contribution:</strong> {roscaGroup.contributionAmount}
           </p>
           <p className="flex items-center gap-2">
             <HiClock className="text-blue-500" />
-            <strong>Duration:</strong> {group.duration}
+            <strong>Duration:</strong> {roscaGroup.cycleDuration}
           </p>
           <p className="flex items-center gap-2">
             <HiUsers className="text-purple-500" />
-            <strong>Members:</strong> {group.members.join(', ')}
+            <strong>Members:</strong> {roscaGroup.members.join(', ')}
           </p>
         </div>
 
