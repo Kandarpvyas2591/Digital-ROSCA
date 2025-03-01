@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema(
     },
     PANNumber: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       minlength: [10, 'PAN Number must be 10 characters long'],
@@ -51,7 +50,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: 50,
     },
-    joinedGroup: [
+    joinedGroups: [
       {
         type: Schema.Types.ObjectId,
         ref: 'ROSCAGroup',

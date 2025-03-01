@@ -15,7 +15,7 @@ const groupSchema = new Schema(
     cycleDuration: {
       type: Number, // in months
       required: true,
-      default: 1,
+      // default: 1,
     },
     contributionAmount: {
       type: Number,
@@ -31,12 +31,6 @@ const groupSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    transactions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Transaction',
-      },
-    ],
     cycleStartDate: {
       type: Date,
       // required: true,
@@ -61,8 +55,15 @@ const groupSchema = new Schema(
     },
     registrationDeadline: {
       type: Date,
+      // required: true,
+    },
+    maxMembers: {
+      type: Number,
       required: true,
     },
+    payoutAmount: {
+      type: Number,
+    }
   },
   { timestamps: true }
 );
