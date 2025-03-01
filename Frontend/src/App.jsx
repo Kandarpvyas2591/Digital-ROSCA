@@ -12,6 +12,7 @@ import SignUp from './pages/Sign-up';
 import LoanOffers from './pages/LoanOffers';
 import PaymentPage from './pages/Payment';
 import LoanAgreement from './pages/LoanAgreement';
+import PaymentPage from './pages/Payment';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'reports',
-            element: <div>Reports</div>,
+            element: <TransactionHistory />,
           },
           {
             path: 'profile',

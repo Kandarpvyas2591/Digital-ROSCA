@@ -1,8 +1,13 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { login } from '../services/apiROSCAgroup';
+import AuthModal from '../components/AuthModal';
 
 function SignIn() {
+  const [isvisible, setIsvisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIconColor, setModalIconColor] = useState('');
   const formRef = useRef(null);
 
   const handleSubmit = async (e) => {
@@ -13,9 +18,15 @@ function SignIn() {
 
     const user = await login(data);
     console.log('User:', user);
-    // if (user) {
-    //   window.location.href = '/dashboard'; // Redirect to dashboard or any other page
-    // }
+    if (user) {
+      setModalTitle('Login Successful!');
+      setModalMessage('Welcome back! You have successfully logged in.');
+      setModalIconColor('bg-blue-500');
+      setIsvisible(true);
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 2500);
+    }
   };
 
   return (
@@ -62,6 +73,13 @@ function SignIn() {
           </a>
         </p>
       </div>
+      <AuthModal
+        isVisible={isvisible}
+        title={modalTitle}
+        message={modalMessage}
+        iconColor={modalIconColor}
+        onClose={() => setIsvisible(false)}
+      />
     </div>
   );
 }

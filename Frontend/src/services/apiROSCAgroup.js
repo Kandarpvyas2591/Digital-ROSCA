@@ -59,14 +59,20 @@ export async function getMe() {
 }
 
 export async function joinGroup(id) {
-  await fetch(`${API_URL}/rosca/add-member/${id}`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    // body: JSON.stringify({}),
-  });
+  try {
+    const data = await fetch(`${API_URL}/rosca/add-member/${id}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+    return data.json();
+    // console.log('Joined group');
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export async function logOut() {
