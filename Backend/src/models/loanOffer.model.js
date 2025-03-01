@@ -9,7 +9,7 @@ const loanOfferSchema = new Schema(
     },
     offeredBy: {
       type: String,
-      enum: ['rosca-group', 'individual-user'],
+      // enum: ['rosca-group', 'individual-user'],
       required: true,
     },
     lenderType: { type: String, enum: ['User', 'ROSCAGroup'], required: true }, // Indicates if sender is a user or a group
@@ -26,6 +26,8 @@ const loanOfferSchema = new Schema(
     interestRate: {
       type: Number,
       required: true,
+      minlength: [0],
+      maxlength: [100],
     },
     duration: {
       type: Number, //months , loan is valid until in month
@@ -40,28 +42,27 @@ const loanOfferSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'expired', 'completed', 'declined'],
+      enum: ['active', 'expired', 'accepted'],
       default: 'active',
     },
     acceptedBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-
     requiredDocuments: [
       {
         type: String,
-        enum: [
-          'Aadhar card',
-          'Income Certificate',
-          // 'Collateral Proof',
-          //  'Agreement'
-        ],
+        enum: ['Aadhar Card', 'Income Certificate'],
       },
     ],
     acceptedDate: {
       type: Date,
     },
+    uploadedDocuments: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

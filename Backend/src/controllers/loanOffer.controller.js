@@ -3,6 +3,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/apiError.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import { User } from '../models/user.model.js';
+
 export const getAllLoanOffers = asyncHandler(async (req, res) => {
   const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
   res
@@ -10,6 +12,16 @@ export const getAllLoanOffers = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, loanOffers, 'All loan offers retrieved successfully')
     );
+});
+
+export const getLoanOfferById = asyncHandler(async (req, res, next) => {
+  const loanOffer = await LoanOffer.findById(req.params.id);
+  if (!loanOffer) {
+    return next(new ApiError(404, 'Loan offer not found'));
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, loanOffer, 'Loan offer retrieved successfully'));
 });
 
 export const createLoanOffer = asyncHandler(async (req, res, next) => {
@@ -47,7 +59,7 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, 'Invalid lender type.'));
   }
 
-  let uploadedDocuments = {};
+  let uploadedDocuments = [];
 
   // If type is "request", ensure reason & document uploads are provided
   if (type === 'request') {
@@ -74,6 +86,7 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     if (!aadharCardUpload) {
       return next(new ApiError(500, 'Failed to upload Aadhar card.'));
     }
+    uploadedDocuments.push(aadharCardUpload.secure_url);
 
     // Upload Income Certificate
     const incomeCertificateBuffer = req.files.incomeCertificate[0].buffer;
@@ -84,11 +97,7 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     if (!incomeCertificateUpload) {
       return next(new ApiError(500, 'Failed to upload Income Certificate.'));
     }
-
-    uploadedDocuments = {
-      'Aadhar card': aadharCardUpload.secure_url,
-      'Income Certificate': incomeCertificateUpload.secure_url,
-    };
+    uploadedDocuments.push(incomeCertificateUpload.secure_url);
   }
 
   // Create the loan offer/request
@@ -112,4 +121,93 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     message: `Loan ${type} created successfully`,
     loanOffer: newLoanOffer,
   });
+});
+
+export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const userId = req.user._id;
+
+  const loanOffer = await LoanOffer.findById(id);
+  if (!loanOffer) {
+    return next(new ApiError(404, 'Loan offer not found'));
+  }
+
+  console.log('🔹 Before Update - Loan Offer:', loanOffer);
+  console.log('🔹 User ID (Borrower):', userId);
+  console.log('🔹 Requested Status:', status);
+
+  if (
+    !['active', 'expired', 'accepted', 'completed', 'declined'].includes(status)
+  ) {
+    return next(new ApiError(400, 'Invalid status update'));
+  }
+
+  if (status === 'accepted') {
+    if (loanOffer.status !== 'active') {
+      return next(
+        new ApiError(400, 'Only active loan offers can be accepted.')
+      );
+    }
+
+    if (loanOffer.acceptedBy) {
+      return next(
+        new ApiError(400, 'Loan offer is already accepted by another user.')
+      );
+    }
+
+    loanOffer.acceptedBy = userId;
+    loanOffer.acceptedDate = new Date();
+  }
+
+  loanOffer.status = status;
+  await loanOffer.save({ validateBeforeSave: false });
+
+  const updatedLoanOffer = await LoanOffer.findById(id);
+  console.log('🔹 After Update - Loan Offer:', updatedLoanOffer);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedLoanOffer, `Loan status updated to ${status}`)
+    );
+});
+
+export const deleteLoanOffer = asyncHandler(async (req, res, next) => {
+  const loanOffer = await LoanOffer.findById(req.params.id);
+
+  if (!loanOffer) {
+    return next(new ApiError(404, 'Loan offer not found'));
+  }
+
+  let isAuthorized = false;
+
+  if (loanOffer.offeredBy === 'individual-user') {
+    // Fetch the creator's username from the User model
+    const user = await User.findById(loanOffer.lender).select('username');
+
+    if (user && user.username === req.user.username) {
+      isAuthorized = true;
+    }
+  } else if (loanOffer.offeredBy === 'rosca-group') {
+    // Fetch the ROSCA group name from the ROSCAGroup model
+    const group = await ROSCAGroup.findById(loanOffer.lender).select('name');
+
+    if (group && group.admin.toString() === req.user._id.toString()) {
+      isAuthorized = true;
+    }
+  }
+
+  // If the user is not authorized, return an error
+  if (!isAuthorized) {
+    return next(
+      new ApiError(403, 'You are not authorized to delete this loan offer')
+    );
+  }
+
+  await LoanOffer.findByIdAndDelete(req.params.id);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'Loan offer deleted successfully'));
 });
