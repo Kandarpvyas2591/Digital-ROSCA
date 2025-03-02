@@ -7,6 +7,7 @@ import {
   deleteGroup,
   // addContribution,
   addMember,
+  payOuts,
 } from '../controllers/roscaGroup.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
@@ -20,5 +21,7 @@ router.patch('/update-group/:id', verifyJWT, updateGroup);
 router.delete('/delete-group/:id', verifyJWT, deleteGroup);
 // router.post('/contribute/:id', addContribution);
 router.post('/add-member/:id', verifyJWT, addMember);
+
+router.post('/payout', payOuts);
 
 export default router;

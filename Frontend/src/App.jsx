@@ -72,9 +72,9 @@ const router = createBrowserRouter([
         element: <LoanAgreement />,
       },
       {
-        path:'/create-loan',
+        path: '/create-loan',
         element: <CreateLoan />,
-      }
+      },
     ],
   },
 ]);
