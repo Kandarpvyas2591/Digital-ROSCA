@@ -58,7 +58,7 @@ function GroupDetail() {
         <div className="space-y-2 text-gray-700">
           <p className="flex items-center gap-2">
             <HiClipboardDocumentList className="text-gray-500" />
-            <strong>Admin:</strong> {roscaGroup.admin?.name || 'Unknown'}
+            <strong>Admin:</strong> {roscaGroup.admin?.username || 'Unknown'}
           </p>
           <p className="flex items-center gap-2">
             <HiCurrencyDollar className="text-green-500" />
@@ -93,7 +93,8 @@ function GroupDetail() {
           </p>
           <p className="flex items-center gap-2">
             <HiClipboardDocumentList className="text-teal-500" />
-            <strong>Payout Amount:</strong> ${roscaGroup.payoutAmount || 'N/A'}
+            <strong>Payout Amount:</strong> $
+            {roscaGroup.contributionAmount || 'N/A'}
           </p>
           <p className="flex items-center gap-2">
             <HiCalendar className="text-gray-700" />
