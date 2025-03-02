@@ -7,7 +7,11 @@ import { User } from '../models/user.model.js';
 import { Email } from '../utils/email.js';
 
 export const getAllLoanOffers = asyncHandler(async (req, res) => {
-  const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
+  const loanOffers = await LoanOffer.find().sort({ createdAt: -1 })
+  .populate({
+    path: 'offeredBy',
+    select: 'username',
+  })
   res
     .status(200)
     .json(

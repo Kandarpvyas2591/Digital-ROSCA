@@ -18,13 +18,14 @@ export default function LoanAgreement() {
     fetch('http://localhost:8000/api/v1/user/getMe', {
       method: 'GET',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      // headers: { 'Content-Type': 'application/json' },
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.user) {
-          console.log(data.user);
-          setCurrentUser(data.user);
+        console.log(data);
+        if (data && data.data) {
+          const user = data.data;
+          setCurrentUser(user);
         }
       })
       .catch((error) => console.error('Error fetching user:', error));
@@ -47,12 +48,12 @@ export default function LoanAgreement() {
 
     // Create transaction details dynamically
     const newTransaction = {
-      type: 'loan-transfer',
+      type: 'loan',
       amount: loanDetails.amount,
       senderType: 'User',
-      sender: currentUser.username,
+      sender: currentUser._id,
       receiverType: 'User',
-      receiver: loanDetails.offeredBy,
+      receiver: loanDetails.offeredBy._id,
     };
 
     setTransactionDetails(newTransaction);
@@ -75,10 +76,10 @@ export default function LoanAgreement() {
           <p className="mb-2 text-gray-700">Duration: <span className="font-semibold">{loanDetails.duration} months</span></p>
           <p className="mb-2 text-gray-700">Interest Rate: <span className="font-semibold">{loanDetails.interestRate}%</span></p>
           {loanDetails.type === 'offer' && (
-            <p className="mb-2 text-gray-700">Offered By: <span className="font-semibold">{loanDetails.offeredBy}</span></p>
+            <p className="mb-2 text-gray-700">Offered By: <span className="font-semibold">{loanDetails.offeredBy.username || loanDetails.offeredBy.name}</span></p>
           )}
           {loanDetails.type === 'request' && (
-            <p className="mb-2 text-gray-700">Requested By: <span className="font-semibold">{loanDetails.offeredBy}</span></p>
+            <p className="mb-2 text-gray-700">Requested By: <span className="font-semibold">{loanDetails.offeredBy.username || loanDetails.offeredBy.name}</span></p>
           )}
           {loanDetails.type === 'request' && (
             <p className="text-gray-700">Reason: <span className="font-semibold">{loanDetails.reason}</span></p>
