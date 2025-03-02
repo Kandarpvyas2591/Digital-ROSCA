@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const CreateLoan = () => {
+  const [currentUser, setCurrentUser] = useState(null); // Store the current user
   const [formData, setFormData] = useState({
     type: 'offer',
-    offeredBy: '',
+    offeredBy: '', // Will be set dynamically
     lenderType: 'User',
     amount: '',
     interestRate: '',
@@ -16,6 +17,34 @@ const CreateLoan = () => {
   const [incomeCertificate, setIncomeCertificate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          'http://localhost:8000/api/v1/user/getMe',
+          {
+            method: 'GET',
+            credentials: 'include',
+          },
+        );
+        const userData = await response.json();
+
+        if (response.ok) {
+          setCurrentUser(userData);
+
+          setFormData((prev) => ({
+            ...prev,
+            offeredBy: userData.data._id,
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,6 +64,7 @@ const CreateLoan = () => {
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
+      console.log(key, value);
     });
 
     if (formData.type === 'request') {
@@ -45,6 +75,9 @@ const CreateLoan = () => {
         setLoading(false);
         return;
       }
+      // data.append('requiredDocuments[]', 'Aadhar Card');
+      // data.append('requiredDocuments[]', 'Income Certificate');
+
       data.append('aadharCard', aadharCard);
       data.append('incomeCertificate', incomeCertificate);
     }
@@ -65,7 +98,7 @@ const CreateLoan = () => {
         setMessage('Loan Offer Created Successfully!');
         setFormData({
           type: 'offer',
-          offeredBy: '',
+          offeredBy: currentUser?._id || '', // Reset to current user
           lenderType: 'User',
           amount: '',
           interestRate: '',
@@ -87,7 +120,7 @@ const CreateLoan = () => {
 
   return (
     <section className="flex min-h-screen w-full items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-xl rounded-lg bg-white p-6 shadow-md sm:p-8 md:p-10 lg:p-12">
+      <div className="w-full max-w-xl rounded-lg bg-white p-6 shadow-md">
         <h1 className="mb-6 text-center text-3xl font-semibold text-purple-600">
           Create Loan Offer
         </h1>
@@ -108,37 +141,21 @@ const CreateLoan = () => {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Offered By
-            </label>
-            <input
-              type="text"
-              name="offeredBy"
-              value={formData.offeredBy}
-              onChange={handleChange}
-              className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-              required
-            />
-          </div>
-
           {formData.type === 'offer' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Lender Type
-                </label>
-                <select
-                  name="lenderType"
-                  value={formData.lenderType}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
-                >
-                  <option value="User">User</option>
-                  <option value="ROSCAGroup">ROSCA Group</option>
-                </select>
-              </div>
-            </>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Lender Type
+              </label>
+              <select
+                name="lenderType"
+                value={formData.lenderType}
+                onChange={handleChange}
+                className="w-full rounded-lg border p-3 focus:ring-2 focus:ring-purple-400"
+              >
+                <option value="User">User</option>
+                <option value="ROSCAGroup">ROSCA Group</option>
+              </select>
+            </div>
           )}
 
           <div>
