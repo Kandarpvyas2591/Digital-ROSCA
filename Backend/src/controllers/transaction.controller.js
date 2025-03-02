@@ -51,9 +51,10 @@ export const createTransaction = asyncHandler(async (req, res) => {
     });
 
     if (type === 'contribution') {
-      receiverEntity.cycleDues = receiverEntity.cycleDues.filter(
-        (member) => member !== sender
-      );
+      receiverEntity.cycleDues = receiverEntity.cycleDues.filter((member) => {
+        member !== sender;
+        console.log(member);
+      });
     }
 
     if (senderEntity.walletAmount < amount) {
