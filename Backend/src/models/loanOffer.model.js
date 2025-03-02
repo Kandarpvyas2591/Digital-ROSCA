@@ -52,7 +52,7 @@ const loanOfferSchema = new Schema(
     requiredDocuments: [
       {
         type: String,
-        enum: ['Aadhar Card', 'Income Certificate'],
+        enum: ['aadharCard', 'incomeCertificate'],
       },
     ],
     acceptedDate: {

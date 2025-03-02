@@ -112,7 +112,7 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     expiryDate,
     reason: type === 'request' ? reason : undefined,
     requiredDocuments:
-      type === 'request' ? ['Aadhar card', 'Income Certificate'] : undefined,
+      type === 'request' ? ['aadharCard', 'incomeCertificate'] : undefined,
     uploadedDocuments: type === 'request' ? uploadedDocuments : undefined,
   });
 
