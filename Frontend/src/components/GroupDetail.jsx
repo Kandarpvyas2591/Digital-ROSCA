@@ -1,39 +1,54 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getGroupById, getMe } from '../services/apiROSCAgroup'; // API call to fetch group details
+import { getGroupById, getMe } from '../services/apiROSCAgroup';
 import Loader from './Loader';
 import TransactionModal from './TransactionModal';
 
 const GroupDetail = () => {
-  const [transactionDetails, setTransactionDetails] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
   const { id } = useParams();
   const [group, setGroup] = useState(null);
+  const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [transactionDetails, setTransactionDetails] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
+  // Fetch group & user data
   useEffect(() => {
-    async function fetchGroup() {
+    async function fetchData() {
       try {
-        const groupData = await getGroupById(id);
-        const user = await getMe();
-        setTransactionDetails({
-          type: 'contribution',
-          senderType: 'User',
-          receiverType: 'ROSCAGroup',
-          receiver: id,
-          sender: user._id,
-          amount: groupData.contributionAmount,
-        });
+        const [groupData, userData] = await Promise.all([
+          getGroupById(id),
+          getMe(),
+        ]);
+
         setGroup(groupData);
-        console.log(transactionDetails, group);
+        setMe(userData);
       } catch (error) {
-        console.error('Failed to fetch group details:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchGroup();
+
+    fetchData();
   }, [id]);
+
+  // Update transaction details after state updates
+  useEffect(() => {
+    if (group && me) {
+      setTransactionDetails({
+        type: 'contribution',
+        senderType: 'User',
+        receiverType: 'ROSCAGroup',
+        receiver: id,
+        sender: me._id,
+        amount: group.contributionAmount,
+      });
+
+      console.log('User:', me);
+      console.log('Group:', group);
+    }
+  }, [group, me, id]);
 
   if (loading) {
     return <Loader />;
@@ -105,21 +120,25 @@ const GroupDetail = () => {
         Created At: {new Date(group.createdAt).toLocaleDateString()}
       </div>
       <div className="flex items-center justify-end">
-        <button
-          className="h-9 w-20 rounded-xl bg-purple-500 px-3 py-1 text-white hover:bg-purple-700"
-          onClick={() => {
-            setModalVisible(true);
-            console.log('Open Modal');
-          }}
-        >
-          Pay
-        </button>
+        {group.cycleDues?.includes(me?._id) ? (
+          <button
+            className="h-9 w-20 rounded-xl bg-purple-500 px-3 py-1 text-white hover:bg-purple-700"
+            onClick={() => setModalVisible(true)}
+          >
+            Pay
+          </button>
+        ) : (
+          <button
+            className="h-9 w-20 cursor-not-allowed rounded-xl bg-gray-400 px-3 py-1 text-white"
+            disabled
+          >
+            Paid
+          </button>
+        )}
         {modalVisible && (
           <TransactionModal
             transactionDetails={transactionDetails}
-            onClose={() => {
-              setModalVisible(false);
-            }}
+            onClose={() => setModalVisible(false)}
           />
         )}
       </div>
