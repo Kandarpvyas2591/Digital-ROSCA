@@ -1,34 +1,28 @@
 import { HiUsers, HiClock, HiCurrencyDollar } from 'react-icons/hi2';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { getGroups } from '../services/apiROSCAgroup';
-
-// const roscaGroups = [
-//   {
-//     id: 1,
-//     name: 'Wealth Builders',
-//     amount: '$500',
-//     duration: '6 months',
-//     members: 3,
-//   },
-//   {
-//     id: 2,
-//     name: 'Smart Savers',
-//     amount: '$300',
-//     duration: '3 months',
-//     members: 4,
-//   },
-//   {
-//     id: 3,
-//     name: 'Future Fund',
-//     amount: '$700',
-//     duration: '12 months',
-//     members: 5,
-//   },
-// ];
+import { getGroups, getMe } from '../services/apiROSCAgroup';
+import { useEffect, useState } from 'react';
 
 function SavingsCircles() {
   const roscaGroups = useLoaderData();
   const navigate = useNavigate();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const userData = await getMe();
+        console.log('Fetched user:', userData);
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
+  console.log('User:', user);
 
   return (
     <div className="flex min-h-screen justify-center bg-gray-100 p-6">
@@ -56,7 +50,6 @@ function SavingsCircles() {
                     index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
                   }`}
                 >
-                  {/* ✅ Corrected Each Column */}
                   <td className="gap-2 px-6 py-4 font-semibold text-gray-800">
                     <HiUsers className="text-gray-500" />
                     {group.name}
@@ -73,12 +66,26 @@ function SavingsCircles() {
                     {group.members.length} / {group.maxMembers} members
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => navigate(`/savings-circles/${group._id}`)}
-                      className={` ${group.members.length === group.maxMembers ? 'bg-red-600 hover:bg-red-700' : 'bg-violet-600 hover:bg-violet-700'} rounded-md px-5 py-2 text-white transition`}
-                    >
-                      Join
-                    </button>
+                    {user.joinedGroups?.some(
+                      (joinedGroup) => joinedGroup._id === group._id,
+                    ) ? (
+                      <span className="rounded-md bg-green-600 px-5 py-2 text-white">
+                        Joined
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          navigate(`/savings-circles/${group._id}`)
+                        }
+                        className={`${
+                          group.members.length === group.maxMembers
+                            ? 'bg-red-600 hover:bg-red-700'
+                            : 'bg-violet-600 hover:bg-violet-700'
+                        } rounded-md px-5 py-2 text-white transition`}
+                      >
+                        Join
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
