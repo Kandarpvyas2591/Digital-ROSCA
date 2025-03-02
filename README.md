@@ -7,6 +7,8 @@
 
 Digital ROSCA (Rotating Savings and Credit Association) is a management platform designed to improve transparency, efficiency, and access to microloans for underbanked communities.
 
+## Project Video link: https://drive.google.com/file/d/1AtNR3KRBifir3CTECwQyIoZmRGTo9r_C/view?usp=sharing
+
 
 ## Problem Statement
 
