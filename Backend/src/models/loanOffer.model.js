@@ -7,12 +7,13 @@ const loanOfferSchema = new Schema(
       enum: ['offer', 'request'],
       // required: true,
     },
+    lenderType: { type: String, enum: ['User', 'ROSCAGroup'], required: true }, // Indicates if sender is a user or a group
     offeredBy: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      refPath: 'lenderType',
       // enum: ['rosca-group', 'individual-user'],
       required: true,
     },
-    lenderType: { type: String, enum: ['User', 'ROSCAGroup'], required: true }, // Indicates if sender is a user or a group
     lender: {
       type: Schema.Types.ObjectId,
       refPath: 'lenderType',
@@ -52,7 +53,7 @@ const loanOfferSchema = new Schema(
     requiredDocuments: [
       {
         type: String,
-        enum: ['aadharCard', 'incomeCertificate'],
+        enum: ['Aadhar Card', 'Income Certificate'],
       },
     ],
     acceptedDate: {
