@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from 'react';
 import { Transition, TransitionChild } from '@headlessui/react';
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid';
@@ -138,7 +139,7 @@ const TransactionModal = ({ transactionDetails, onClose }) => {
                   className="w-full rounded border border-gray-300 px-4 py-2"
                 />
                 <button
-                  className="w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                  className="w-full rounded bg-purple-500 px-4 py-2 font-bold text-white hover:bg-purple-700"
                   type="submit"
                   disabled={loading}
                 >
@@ -148,7 +149,7 @@ const TransactionModal = ({ transactionDetails, onClose }) => {
             }
             <button
               onClick={onClose}
-              className="mt-6 text-sm text-blue-500 hover:underline"
+              className="mt-6 text-sm text-purple-500 hover:underline"
             >
               Cancel
             </button>

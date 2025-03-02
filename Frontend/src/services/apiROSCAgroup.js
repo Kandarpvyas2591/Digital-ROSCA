@@ -81,3 +81,18 @@ export async function logOut() {
     credentials: 'include',
   });
 }
+
+export async function getUserTransactions(id) {
+  const res = await fetch(
+    `${API_URL}/transaction/get-user-transactions/${id}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  );
+
+  if (!res.ok) throw new Error('Failed to get transactions');
+
+  const data = await res.json();
+  return data;
+}

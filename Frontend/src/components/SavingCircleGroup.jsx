@@ -109,21 +109,35 @@ function GroupDetail() {
           >
             Go Back
           </button>
-          <button
-            onClick={() => {
-              handleJoinGroup(roscaGroup._id);
-              setModalTitle('Joined Successfully!');
-              setModalMessage('Welcome to the Group!');
-              setModalIconColor('bg-purple-500');
-              setIsvisible(true);
-              setTimeout(() => {
-                window.location.href = '/dashboard';
-              }, 2500);
-            }}
-            className="ml-4 rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700"
-          >
-            Join
-          </button>
+          {roscaGroup.maxMembers !== roscaGroup.members.length ? (
+            <button
+              onClick={() => {
+                handleJoinGroup(roscaGroup._id);
+                setModalTitle('Joined Successfully!');
+                setModalMessage('Welcome to the Group!');
+                setModalIconColor('bg-purple-500');
+                setIsvisible(true);
+                setTimeout(() => {
+                  window.location.href = '/dashboard';
+                }, 2500);
+              }}
+              className="ml-4 rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700"
+            >
+              Join
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setModalTitle('Group Full!');
+                setModalMessage('The group is already full.');
+                setModalIconColor('bg-red-500');
+                setIsvisible(true);
+              }}
+              className="ml-4 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            >
+              Group Full
+            </button>
+          )}
         </div>
       </div>
 
