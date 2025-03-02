@@ -59,7 +59,7 @@ const TransactionHistory = () => {
                 <td className="px-4 py-2">
                   {tx.receiver.username || tx.receiver.name}
                 </td>
-                <td className="px-4 py-2 font-semibold">${tx.amount}</td>
+                <td className="px-4 py-2 font-semibold">{tx.amount}</td>
                 <td className="px-4 py-2">
                   <span
                     className={`rounded px-2 py-1 text-xs font-semibold ${
@@ -106,7 +106,7 @@ const TransactionHistory = () => {
               ({selectedTransaction.sender.name ? 'Group' : 'User'})
             </p>
             <p>
-              <strong>Amount:</strong> ${selectedTransaction.amount}
+              <strong>Amount:</strong> {selectedTransaction.amount}
             </p>
             <p>
               <strong>Status:</strong>{' '}
