@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from 'react';
 import { Transition, TransitionChild } from '@headlessui/react';
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid';

@@ -1,18 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getGroupById } from '../services/apiROSCAgroup'; // API call to fetch group details
+import { getGroupById, getMe } from '../services/apiROSCAgroup'; // API call to fetch group details
 import Loader from './Loader';
+import TransactionModal from './TransactionModal';
 
 const GroupDetail = () => {
+  const [transactionDetails, setTransactionDetails] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
   const { id } = useParams();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log(id);
+
   useEffect(() => {
     async function fetchGroup() {
       try {
         const groupData = await getGroupById(id);
+        const user = await getMe();
+        setTransactionDetails({
+          type: 'contribution',
+          senderType: 'User',
+          receiverType: 'ROSCAGroup',
+          receiver: id,
+          sender: user._id,
+          amount: groupData.contributionAmount,
+        });
         setGroup(groupData);
+        console.log(transactionDetails, group);
       } catch (error) {
         console.error('Failed to fetch group details:', error);
       } finally {
@@ -25,7 +38,6 @@ const GroupDetail = () => {
   if (loading) {
     return <Loader />;
   }
-  console.log(group);
 
   if (!group) {
     return (
@@ -91,6 +103,25 @@ const GroupDetail = () => {
 
       <div className="mt-4 text-sm text-gray-500">
         Created At: {new Date(group.createdAt).toLocaleDateString()}
+      </div>
+      <div className="flex items-center justify-end">
+        <button
+          className="h-9 w-20 rounded-xl bg-purple-500 px-3 py-1 text-white hover:bg-purple-700"
+          onClick={() => {
+            setModalVisible(true);
+            console.log('Open Modal');
+          }}
+        >
+          Pay
+        </button>
+        {modalVisible && (
+          <TransactionModal
+            transactionDetails={transactionDetails}
+            onClose={() => {
+              setModalVisible(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );
