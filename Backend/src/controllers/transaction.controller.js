@@ -50,6 +50,12 @@ export const createTransaction = asyncHandler(async (req, res) => {
       status: 'pending',
     });
 
+    if (type === 'contribution') {
+      receiverEntity.cycleDues = receiverEntity.cycleDues.filter(
+        (member) => member !== sender
+      );
+    }
+
     if (senderEntity.walletAmount < amount) {
       newTransaction.status = 'failed';
       await newTransaction.save();

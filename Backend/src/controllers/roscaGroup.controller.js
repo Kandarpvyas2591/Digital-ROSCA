@@ -21,6 +21,8 @@ export const createGroup = asyncHandler(async (req, res) => {
       newGroup.cycleEndDate.getMonth() + newGroup.cycleDuration
     );
 
+    newGroup.cycleDues = newGroup.members;
+
     await newGroup.save();
     res
       .status(201)
@@ -164,6 +166,7 @@ export const addMember = asyncHandler(async (req, res) => {
 
     // Add member to group
     group.members.push(req.user.id);
+    group.cycleDues.push(req.user.id);
     await group.save();
 
     res
@@ -235,6 +238,8 @@ export const payOuts = asyncHandler(async (req, res) => {
         });
         group.cycleNumber += 1;
         group.cycleNumber = group.cycleNumber % group.maxMembers;
+
+        group.cycleDues = group.members;
 
         await transaction.save();
         await group.save();
