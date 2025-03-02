@@ -118,3 +118,81 @@ export const createLoanAgreement = asyncHandler(async (req, res, next) => {
       )
     );
 });
+
+export const updateLoanAgreementStatus = asyncHandler(
+  async (req, res, next) => {
+    const { agreementId } = req.params;
+    const { status, rejectionReason } = req.body;
+    const userId = req.user._id; // Logged-in user
+
+    // ✅ Fetch Loan Agreement
+    const loanAgreement = await LoanAgreement.findById(agreementId).populate({
+      path: 'loanOffer',
+      populate: { path: 'lender', model: 'User ROSCAGroup' }, // Dynamically populate based on lenderType
+    });
+
+    if (!loanAgreement) {
+      return next(new ApiError(404, 'Loan agreement not found.'));
+    }
+
+    const loanOffer = loanAgreement.loanOffer;
+
+    // ✅ Ensure Only the Creator Can Approve or Reject
+    const isCreator =
+      (loanOffer.lenderType === 'User' &&
+        loanOffer.lender?._id?.toString() === userId?.toString()) ||
+      (loanOffer.lenderType === 'ROSCAGroup' &&
+        loanOffer.lender?.admin?._id?.toString() === userId?.toString());
+
+    if (!isCreator) {
+      return next(
+        new ApiError(403, 'You are not authorized to update this agreement.')
+      );
+    }
+
+    // ✅ Ensure Status is Valid
+    if (!['approved', 'rejected'].includes(status)) {
+      return next(
+        new ApiError(400, 'Invalid status. Allowed values: approved, rejected.')
+      );
+    }
+
+    // ✅ Handle Approved Status
+    if (status === 'approved') {
+      // 🔹 Simulate Money Transfer
+      const transferredAmount = loanAgreement.amount;
+      console.log(
+        `✅ Money Transferred: ₹${transferredAmount} to Borrower ID: ${loanAgreement.borrower}`
+      );
+
+      // ✅ Update Agreement Status
+      loanAgreement.status = 'approved';
+    }
+
+    // ✅ Handle Rejected Status
+    else if (status === 'rejected') {
+      if (!rejectionReason) {
+        return next(
+          new ApiError(
+            400,
+            'Rejection reason is required when rejecting a loan agreement.'
+          )
+        );
+      }
+      loanAgreement.status = 'rejected';
+      loanAgreement.verificationReason = rejectionReason;
+    }
+
+    await loanAgreement.save();
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          loanAgreement,
+          `Loan agreement ${status} successfully.`
+        )
+      );
+  }
+);

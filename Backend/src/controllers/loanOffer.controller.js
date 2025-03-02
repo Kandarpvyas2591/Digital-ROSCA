@@ -4,6 +4,7 @@ import { ApiError } from '../utils/apiError.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { User } from '../models/user.model.js';
+import { log } from 'console';
 
 export const getAllLoanOffers = asyncHandler(async (req, res) => {
   const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
@@ -29,12 +30,14 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     type,
     offeredBy,
     lenderType,
+    lender,
     amount,
     interestRate,
     duration,
     expiryDate,
     reason,
   } = req.body;
+  const userId = req.user._id;
 
   // Ensure valid type
   if (!type || !['offer', 'request'].includes(type)) {
@@ -54,6 +57,8 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
   ) {
     return next(new ApiError(400, 'All required fields must be filled.'));
   }
+
+  let assignedLender = userId;
 
   if (lenderType !== 'User' && lenderType !== 'ROSCAGroup') {
     return next(new ApiError(400, 'Invalid lender type.'));
@@ -105,13 +110,14 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     type,
     offeredBy,
     lenderType,
+    lender: assignedLender,
     amount,
     interestRate,
     duration,
     expiryDate,
     reason: type === 'request' ? reason : undefined,
     requiredDocuments:
-      type === 'request' ? ['Aadhar card', 'Income Certificate'] : undefined,
+      type === 'request' ? ['Aadhar Card', 'Income Certificate'] : undefined,
     uploadedDocuments: type === 'request' ? uploadedDocuments : undefined,
   });
 
@@ -121,6 +127,64 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     message: `Loan ${type} created successfully`,
     loanOffer: newLoanOffer,
   });
+});
+
+export const updateLoanOffer = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { amount, interestRate, expiryDate } = req.body;
+  const userId = req.user._id;
+
+  // ✅ Find the Loan Offer and Populate Lender
+  const loanOffer = await LoanOffer.findById(id)
+    .populate({
+      path: 'lender',
+    })
+    .populate({
+      path: 'lender.admin',
+      select: '_id email',
+    }); // ✅ Get admin ID if lender is ROSCAGroup
+
+  if (!loanOffer) {
+    return next(new ApiError(404, 'Loan offer not found'));
+  }
+
+  // ✅ Ensure Loan is Still Active (Not Accepted)
+  if (loanOffer.status !== 'active') {
+    return next(
+      new ApiError(
+        400,
+        'Cannot update loan offer after it has been accepted or expired.'
+      )
+    );
+  }
+
+  // ✅ Check if Requesting User is the Creator
+  const isCreator =
+    (loanOffer.lenderType === 'User' &&
+      loanOffer.lender?._id?.toString() === userId.toString()) ||
+    (loanOffer.lenderType === 'ROSCAGroup' &&
+      loanOffer.lender?.admin?._id?.toString() === userId.toString());
+
+  console.log(loanOffer.lender?._id);
+  console.log(loanOffer.lender?.admin);
+  if (!isCreator) {
+    return next(
+      new ApiError(403, 'You are not authorized to update this loan offer.')
+    );
+  }
+
+  // ✅ Perform Update
+  const updatedLoanOffer = await LoanOffer.findByIdAndUpdate(
+    id,
+    { amount, interestRate, expiryDate },
+    { new: true, runValidators: true }
+  );
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedLoanOffer, 'Loan offer updated successfully.')
+    );
 });
 
 export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
@@ -137,9 +201,7 @@ export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
   console.log('🔹 User ID (Borrower):', userId);
   console.log('🔹 Requested Status:', status);
 
-  if (
-    !['active', 'expired', 'accepted', 'completed', 'declined'].includes(status)
-  ) {
+  if (!['active', 'expired', 'accepted', 'declined'].includes(status)) {
     return next(new ApiError(400, 'Invalid status update'));
   }
 
