@@ -70,12 +70,12 @@ function SavingsCircles() {
                     {group.cycleDuration} Months
                   </td>
                   <td className="px-6 py-4 text-gray-700">
-                    {group.members.length} members
+                    {group.members.length} / {group.maxMembers} members
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => navigate(`/savings-circles/${group._id}`)}
-                      className="rounded-md bg-violet-600 px-5 py-2 text-white transition hover:bg-violet-700"
+                      className={` ${group.members.length === group.maxMembers ? 'bg-red-600 hover:bg-red-700' : 'bg-violet-600 hover:bg-violet-700'} rounded-md px-5 py-2 text-white transition`}
                     >
                       Join
                     </button>
