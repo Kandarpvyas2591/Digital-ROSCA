@@ -26,7 +26,7 @@ router.route('/change-password').post(verifyJWT, changeCurrentPassword);
 
 router.route('/getme').get(verifyJWT, getMe);
 
-router.route('/getme/:id').get(verifyJWT, getUserById);
+router.route('/get-user/:id').get(verifyJWT, getUserById);
 
 router.route('/updateUser').patch(verifyJWT, updateUser);
 

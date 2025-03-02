@@ -13,7 +13,6 @@ const TransactionModal = ({ transactionDetails, onClose }) => {
 
   const { type, senderType, sender, receiverType, receiver, amount } =
     transactionDetails;
-  let senderName, receiverName;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,10 +100,9 @@ const TransactionModal = ({ transactionDetails, onClose }) => {
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-4"
         >
-          <div className="w-full max-w-lg rounded bg-white p-6 shadow-lg">
+          <div className="w-full max-w-lg justify-center rounded bg-white p-6 shadow-lg">
             <h3 className="mb-4 text-lg font-medium text-gray-900">
-              {amount}
-              {receiver}
+              {`Transfer Rs. ${amount}`}
             </h3>
             <h3 className="mb-4 text-lg font-medium text-gray-900">
               Enter Password
