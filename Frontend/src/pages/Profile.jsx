@@ -140,23 +140,13 @@ export default function ProfilePage() {
           />
         </div>
         <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-700">Joined Groups</h3>
-          <ul className="list-disc pl-6 text-gray-600">
-            {user?.joinedGroups?.map((group, index) => (
-              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold text-gray-700">
-            Created Groups
-          </h3>
-          <ul className="list-disc pl-6 text-gray-600">
-            {user?.createdGroups?.map((group, index) => (
-              <li key={index}>{group.name}</li> // Render the name or any other property of the group object
-            ))}
-          </ul>
+          <label className="text-gray-600">Wallet Amount</label>
+          <input
+            type="number"
+            value={user.walletAmount}
+            className="w-full rounded border bg-gray-100 p-2"
+            disabled={!edit}
+          />
         </div>
       </div>
     </div>

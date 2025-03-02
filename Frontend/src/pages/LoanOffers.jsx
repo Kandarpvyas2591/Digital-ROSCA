@@ -83,12 +83,12 @@ const LoanPage = () => {
             </p>
             {selectedLoan.type === 'request' && (
               <p className="text-gray-700">
-                <strong>Requested By:</strong> {selectedLoan.offeredBy}
+                <strong>Requested By:</strong> {selectedLoan.offeredBy.username || selectedLoan.offeredBy.name}
               </p>
             )}
             {selectedLoan.type === 'offer' && (
               <p className="text-gray-700">
-                <strong>Offered By:</strong> {selectedLoan.offeredBy}
+                <strong>Offered By:</strong> {selectedLoan.offeredBy.username || selectedLoan.offeredBy.name}
               </p>
             )}
             {selectedLoan.type === 'request' && (

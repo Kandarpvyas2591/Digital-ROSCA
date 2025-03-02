@@ -1,4 +1,5 @@
 import { ROSCAGroup } from '../models/roscaGroup.model.js';
+import { Transaction } from '../models/transaction.model.js';
 import { User } from '../models/user.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/apiError.js';
@@ -14,6 +15,13 @@ export const createGroup = asyncHandler(async (req, res) => {
     user.joinedGroups.push(newGroup.id);
     user.createdGroup.push(newGroup.id);
     await user.save();
+
+    newGroup.cycleEndDate = new Date(newGroup.cycleStartDate);
+    newGroup.cycleEndDate.setMonth(
+      newGroup.cycleEndDate.getMonth() + newGroup.cycleDuration
+    );
+
+    newGroup.cycleDues = newGroup.members;
 
     await newGroup.save();
     res
@@ -37,10 +45,15 @@ export const getAllGroups = asyncHandler(async (req, res) => {
 // Get a single ROSCA group by ID
 export const getGroupById = asyncHandler(async (req, res) => {
   try {
-    const group = await ROSCAGroup.findById(req.params.id).populate({
-      path: 'members',
-      select: 'username email',
-    });
+    const group = await ROSCAGroup.findById(req.params.id)
+      .populate({
+        path: 'members',
+        select: 'username email',
+      })
+      .populate({
+        path: 'admin',
+        select: 'username',
+      });
     if (!group)
       return res
         .status(404)
@@ -48,7 +61,7 @@ export const getGroupById = asyncHandler(async (req, res) => {
 
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json(ApiResponse(error.message, 500));
+    res.status(500).json(new ApiError(error.message, 500));
   }
 });
 
@@ -153,6 +166,7 @@ export const addMember = asyncHandler(async (req, res) => {
 
     // Add member to group
     group.members.push(req.user.id);
+    group.cycleDues.push(req.user.id);
     await group.save();
 
     res
@@ -166,7 +180,7 @@ export const addMember = asyncHandler(async (req, res) => {
 export const removeMember = asyncHandler(async (req, res) => {
   try {
     const group = await ROSCAGroup.findById(req.params.id);
-    const {memberId} = req.body;
+    const { memberId } = req.body;
     const user = await User.findById(memberId);
 
     if (!group)
@@ -178,7 +192,9 @@ export const removeMember = asyncHandler(async (req, res) => {
     if (!group.members.includes(req.user.id)) {
       return res
         .status(400)
-        .json(new ApiError('Member is not part of this ROSCA group', null, 400));
+        .json(
+          new ApiError('Member is not part of this ROSCA group', null, 400)
+        );
     }
 
     if (!user) {
@@ -201,16 +217,35 @@ export const removeMember = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500).json(new ApiError(error.message, 500));
   }
-})
+});
 
 export const payOuts = asyncHandler(async (req, res) => {
   try {
+    const date = Date.now();
     const groups = await ROSCAGroup.find();
     groups.forEach(async (group) => {
-      group.cycleEndDate = new Date(group.cycleStartDate);
-      group.cycleEndDate.setMonth(group.cycleEndDate.getMonth() + group.cycleDuration);
-    })
+      if (group.cycleEndDate <= date) {
+        group.cycleEndDate.setMonth(
+          group.cycleEndDate.getMonth() + group.cycleDuration
+        );
+        const transaction = await Transaction.create({
+          type: 'payout',
+          amount: group.payoutAmount * group.members.length,
+          senderType: 'ROSCAGroup',
+          sender: group.id,
+          receiverType: 'User',
+          receiver: group.members[group.cycleNumber],
+        });
+        group.cycleNumber += 1;
+        group.cycleNumber = group.cycleNumber % group.maxMembers;
+
+        group.cycleDues = group.members;
+
+        await transaction.save();
+        await group.save();
+      }
+    });
   } catch (error) {
-    
+    console.log(error);
   }
-})
+});

@@ -31,8 +31,10 @@ app.use(helmet());
 app.use(mongoSanitize());
 app.use(xss());
 
-cron.schedule('0 8 * * *', () => {
+cron.schedule('0 8 * * *', async () => {
   console.log('Running daily rosca funds allocation job...');
+  payOuts();
+  console.log('Daily rosca funds allocation job completed.');
 });
 
 //routes import
@@ -40,6 +42,7 @@ import userRouter from './routes/user.routes.js';
 import roscaGroupRouter from './routes/roscaGroup.routes.js';
 import loanOfferRouter from './routes/loanOffer.routes.js';
 import transactionRouter from './routes/transaction.routes.js';
+import { payOuts } from './controllers/roscaGroup.controller.js';
 //router declaration
 app.use('/api/v1/user', userRouter);
 // app.use('/api/v1/loan', loanRouter);

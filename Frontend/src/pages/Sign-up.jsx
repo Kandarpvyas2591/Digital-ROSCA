@@ -5,7 +5,7 @@ import AuthModal from '../components/AuthModal';
 
 function SignUp() {
   const formRef = useRef(null);
-  const [isvisible, setIsvisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [modalIconColor, setModalIconColor] = useState('');
@@ -15,18 +15,22 @@ function SignUp() {
     const formData = new FormData(formRef.current);
     const data = Object.fromEntries(formData.entries());
     console.log('Form Submitted', data);
-    const user = await signUp(data);
-    if (user) {
+    try {
+      const user = await signUp(data);
       if (user) {
         setModalTitle('Sign Up Successful!');
-        setModalMessage('Welcome back! You have successfully Signed in.');
+        setModalMessage('Welcome! You have successfully signed up.');
         setModalIconColor('bg-blue-500');
-        setIsvisible(true);
+        setIsVisible(true);
         setTimeout(() => {
           window.location.href = '/dashboard';
         }, 2500);
       }
-      window.location.href = '/dashboard'; // Redirect to dashboard or any other page
+    } catch (error) {
+      setModalTitle('Sign Up Failed');
+      setModalMessage('An error occurred during sign up. Please try again.');
+      setModalIconColor('bg-red-500');
+      setIsVisible(true);
     }
   };
 
@@ -116,13 +120,15 @@ function SignUp() {
           </a>
         </p>
       </div>
-      <AuthModal
-        isVisible={isvisible}
-        title={modalTitle}
-        message={modalMessage}
-        iconColor={modalIconColor}
-        onClose={() => setIsvisible(false)}
-      />
+      {isVisible && (
+        <AuthModal
+          isVisible={isVisible}
+          title={modalTitle}
+          message={modalMessage}
+          iconColor={modalIconColor}
+          onClose={() => setIsVisible(false)}
+        />
+      )}
     </div>
   );
 }

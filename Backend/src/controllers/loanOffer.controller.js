@@ -5,9 +5,13 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { User } from '../models/user.model.js';
 import { log } from 'console';
+import { Email } from '../utils/email.js';
 
 export const getAllLoanOffers = asyncHandler(async (req, res) => {
-  const loanOffers = await LoanOffer.find().sort({ createdAt: -1 });
+  const loanOffers = await LoanOffer.find().sort({ createdAt: -1 }).populate({
+    path: 'offeredBy',
+    select: 'username',
+  });
   res
     .status(200)
     .json(
@@ -117,7 +121,7 @@ export const createLoanOffer = asyncHandler(async (req, res, next) => {
     expiryDate,
     reason: type === 'request' ? reason : undefined,
     requiredDocuments:
-      type === 'request' ? ['Aadhar Card', 'Income Certificate'] : undefined,
+      type === 'request' ? ['aadharCard', 'incomeCertificate'] : undefined,
     uploadedDocuments: type === 'request' ? uploadedDocuments : undefined,
   });
 
@@ -197,9 +201,9 @@ export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
     return next(new ApiError(404, 'Loan offer not found'));
   }
 
-  console.log('🔹 Before Update - Loan Offer:', loanOffer);
-  console.log('🔹 User ID (Borrower):', userId);
-  console.log('🔹 Requested Status:', status);
+  // console.log('🔹 Before Update - Loan Offer:', loanOffer);
+  // console.log('🔹 User ID (Borrower):', userId);
+  // console.log('🔹 Requested Status:', status);
 
   if (!['active', 'expired', 'accepted', 'declined'].includes(status)) {
     return next(new ApiError(400, 'Invalid status update'));
@@ -223,6 +227,19 @@ export const updateLoanOfferStatus = asyncHandler(async (req, res, next) => {
   }
 
   loanOffer.status = status;
+  const loanOfferEmail = await LoanOffer.findById(id).populate({
+    path: 'lender',
+    populate: {
+      path: 'admin',
+      select: 'email',
+    },
+  });
+
+  console.log(loanOfferEmail);
+
+  // const emailData = new Email(loanOfferEmail, 'loanRequest');
+  // await emailData.sendLoanRequest();
+
   await loanOffer.save({ validateBeforeSave: false });
 
   const updatedLoanOffer = await LoanOffer.findById(id);

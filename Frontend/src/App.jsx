@@ -14,6 +14,7 @@ import LoanAgreement from './pages/LoanAgreement';
 import TransactionHistory from './components/TransactionHistory';
 import GroupDetail from './components/GroupDetail';
 import CreateLoan from './pages/CreateLoan';
+import AllTransactions from './components/showAllTransaction';
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             element: <ProfilePage />,
+          },
+          {
+            path: 'all-reports',
+            element: <AllTransactions />,
           },
         ],
       },
@@ -72,9 +77,9 @@ const router = createBrowserRouter([
         element: <LoanAgreement />,
       },
       {
-        path:'/create-loan',
+        path: '/create-loan',
         element: <CreateLoan />,
-      }
+      },
     ],
   },
 ]);

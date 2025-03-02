@@ -50,6 +50,13 @@ export const createTransaction = asyncHandler(async (req, res) => {
       status: 'pending',
     });
 
+    if (type === 'contribution') {
+      receiverEntity.cycleDues = receiverEntity.cycleDues.filter((member) => {
+        member !== sender;
+        console.log(member);
+      });
+    }
+
     if (senderEntity.walletAmount < amount) {
       newTransaction.status = 'failed';
       await newTransaction.save();
@@ -71,10 +78,13 @@ export const createTransaction = asyncHandler(async (req, res) => {
       senderEntity.walletAmount -= amount;
       receiverEntity.walletAmount += amount;
       newTransaction.status = 'completed';
+      newTransaction.orderId = order.id;
 
       await senderEntity.save();
       await receiverEntity.save();
       await newTransaction.save();
+
+      console.log(order);
 
       return res.json(
         new ApiResponse(201, order, 'Order created successfully')

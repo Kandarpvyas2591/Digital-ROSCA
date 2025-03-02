@@ -9,9 +9,21 @@ import {
 import bg_img from '../assets/bg_img.png';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import TransactionModal from '../components/TransactionModal';
 
 function Home() {
   const navigate = useNavigate();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const transactionDetails = {
+    type: 'contribution',
+    amount: 100,
+    senderType: 'User',
+    sender: '67c2ecbe39a7fdffef2fdf78',
+    receiverType: 'User',
+    receiver: '67c32d24a3b5df7ed8a7ce07',
+  };
   return (
     <div className="flex min-h-screen flex-col">
       <div
@@ -84,6 +96,22 @@ function Home() {
           description="Enjoy minimal costs for transactions, making savings more efficient."
         />
       </div>
+      <button
+        onClick={() => {
+          setModalVisible(true);
+          console.log('Open Modal');
+        }}
+      >
+        Open Modal
+      </button>
+      {modalVisible && (
+        <TransactionModal
+          transactionDetails={transactionDetails}
+          onClose={() => {
+            setModalVisible(false);
+          }}
+        />
+      )}
       <Footer />
     </div>
   );

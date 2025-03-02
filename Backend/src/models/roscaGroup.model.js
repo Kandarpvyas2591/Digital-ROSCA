@@ -44,6 +44,12 @@ const groupSchema = new Schema(
       default: 0,
       // required: true,
     },
+    cycleDues: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     walletAmount: {
       type: Number,
       // required: true,
