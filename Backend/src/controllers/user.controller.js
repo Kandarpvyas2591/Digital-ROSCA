@@ -150,6 +150,19 @@ const getMe = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, 'User details fetched successfully'));
 });
 
+export const getUserById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await User.findById(id).select('-password -refreshToken');
+
+  if (!user) {
+    return next(new ApiError(404, 'User not found.'));
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User details retrieved successfully.'));
+});
+
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);

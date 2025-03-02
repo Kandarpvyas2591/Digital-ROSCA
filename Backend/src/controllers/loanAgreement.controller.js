@@ -125,7 +125,6 @@ export const updateLoanAgreementStatus = asyncHandler(
     const { status, rejectionReason } = req.body;
     const userId = req.user._id; // Logged-in user
 
-    // ✅ Fetch Loan Agreement
     const loanAgreement = await LoanAgreement.findById(agreementId).populate({
       path: 'loanOffer',
       populate: { path: 'lender', model: 'User ROSCAGroup' }, // Dynamically populate based on lenderType
@@ -137,7 +136,6 @@ export const updateLoanAgreementStatus = asyncHandler(
 
     const loanOffer = loanAgreement.loanOffer;
 
-    // ✅ Ensure Only the Creator Can Approve or Reject
     const isCreator =
       (loanOffer.lenderType === 'User' &&
         loanOffer.lender?._id?.toString() === userId?.toString()) ||
@@ -150,27 +148,21 @@ export const updateLoanAgreementStatus = asyncHandler(
       );
     }
 
-    // ✅ Ensure Status is Valid
     if (!['approved', 'rejected'].includes(status)) {
       return next(
         new ApiError(400, 'Invalid status. Allowed values: approved, rejected.')
       );
     }
 
-    // ✅ Handle Approved Status
     if (status === 'approved') {
       // 🔹 Simulate Money Transfer
       const transferredAmount = loanAgreement.amount;
       console.log(
-        `✅ Money Transferred: ₹${transferredAmount} to Borrower ID: ${loanAgreement.borrower}`
+        `Money Transferred: ₹${transferredAmount} to Borrower ID: ${loanAgreement.borrower}`
       );
 
-      // ✅ Update Agreement Status
       loanAgreement.status = 'approved';
-    }
-
-    // ✅ Handle Rejected Status
-    else if (status === 'rejected') {
+    } else if (status === 'rejected') {
       if (!rejectionReason) {
         return next(
           new ApiError(

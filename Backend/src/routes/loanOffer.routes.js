@@ -35,7 +35,9 @@ router.route('/loanAgreement/:id').post(
   createLoanAgreement
 );
 router.route('/loanStatus/:id').patch(verifyJWT, updateLoanOfferStatus);
-router
-  .route('/loanAgreeStatus/:agreementId')
-  .patch(verifyJWT, verifyLoanCreator, updateLoanAgreementStatus);
+router.route('/loanAgreeStatus/:agreementId').patch(
+  verifyJWT,
+  //  verifyLoanCreator,
+  updateLoanAgreementStatus
+);
 export default router;
